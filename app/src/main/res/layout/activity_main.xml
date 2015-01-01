@@ -125,8 +125,22 @@
                 <Button
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:text="TRUFAX"
+                    android:id="@+id/button_trufax"
+                    android:layout_weight="1" />
+
+                <Button
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
                     android:text="0"
                     android:id="@+id/button_zero"
+                    android:layout_weight="1" />
+
+                <Button
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text=""
+                    android:id="@+id/button_unused"
                     android:layout_weight="1" />
 
             </TableRow>

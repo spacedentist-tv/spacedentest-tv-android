@@ -21,13 +21,60 @@ import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.ResultCallback;
 import com.google.android.gms.common.api.Status;
 
+import org.json.JSONObject;
+
+import java.io.IOException;
+
 
 public class SDMainActivity extends ActionBarActivity
                             implements GoogleApiClient.OnConnectionFailedListener,
-                                       GoogleApiClient.ConnectionCallbacks {
+                                       GoogleApiClient.ConnectionCallbacks,
+                                       Cast.MessageReceivedCallback {
 
     private static final String TAG = SDMainActivity.class.getSimpleName();
-    private static final String APPLICATION_ID = CastMediaControlIntent.DEFAULT_MEDIA_RECEIVER_APPLICATION_ID;
+    private static final String SDTV_MSG_KEY = "sdtv_msg";
+    private static final String SDTV_REMOTE_CONTROL_KEY = "rc";
+    private static final String SDTV_KEY_KEY = "key";
+
+    enum SDButton {
+        BUTTON_ONE(R.id.button_one, "1"),
+        BUTTON_TWO(R.id.button_two, "2"),
+        BUTTON_THREE(R.id.button_three, "3"),
+        BUTTON_FOUR(R.id.button_four, "4"),
+        BUTTON_FIVE(R.id.button_five, "5"),
+        BUTTON_SIX(R.id.button_six, "6"),
+        BUTTON_SEVEN(R.id.button_seven, "7"),
+        BUTTON_EIGHT(R.id.button_eight, "8"),
+        BUTTON_NINE(R.id.button_nine, "9"),
+        BUTTON_ZERO(R.id.button_zero, "0"),
+        BUTTON_TRUFAX(R.id.button_trufax, "cycle");
+
+        private final int mResId;
+        private final String mKey;
+
+        SDButton(int resId, String key) {
+            mResId = resId;
+            mKey = key;
+        }
+
+        public int getResId() {
+            return mResId;
+        }
+
+        public String getKey() {
+            return mKey;
+        }
+
+        public static SDButton fromResId(int resId) {
+            for (SDButton button : SDButton.values()) {
+                if (button.getResId() == resId) {
+                    return button;
+                }
+            }
+
+            return null;
+        }
+    }
 
     private Cast.Listener mCastClientListener = new Cast.Listener() {
         @Override
@@ -85,7 +132,29 @@ public class SDMainActivity extends ActionBarActivity
     private final View.OnClickListener mButtonListener = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-            Log.d(TAG, "Button was clicked: " + v.getId());
+            if (mApiClient != null) {
+
+                try {
+                    SDButton button = SDButton.fromResId(v.getId());
+                    Log.d(TAG, "Button was clicked: " + button.getKey());
+                    JSONObject message = new JSONObject();
+                    message.put(SDTV_MSG_KEY, SDTV_REMOTE_CONTROL_KEY);
+                    message.put(SDTV_KEY_KEY, button.getKey());
+
+                    Cast.CastApi.sendMessage(mApiClient, getApplicationContext().getString(R.string.application_namespace), message.toString())
+                            .setResultCallback(
+                                    new ResultCallback<Status>() {
+                                        @Override
+                                        public void onResult(Status result) {
+                                            if (!result.isSuccess()) {
+                                                Log.e(TAG, "Sending message failed");
+                                            }
+                                        }
+                                    });
+                } catch (Exception e) {
+                    Log.e(TAG, "Exception while sending message", e);
+                }
+            }
         }
     };
 
@@ -94,21 +163,14 @@ public class SDMainActivity extends ActionBarActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        findViewById(R.id.button_one).setOnClickListener(mButtonListener);
-        findViewById(R.id.button_two).setOnClickListener(mButtonListener);
-        findViewById(R.id.button_three).setOnClickListener(mButtonListener);
-        findViewById(R.id.button_four).setOnClickListener(mButtonListener);
-        findViewById(R.id.button_five).setOnClickListener(mButtonListener);
-        findViewById(R.id.button_six).setOnClickListener(mButtonListener);
-        findViewById(R.id.button_seven).setOnClickListener(mButtonListener);
-        findViewById(R.id.button_eight).setOnClickListener(mButtonListener);
-        findViewById(R.id.button_nine).setOnClickListener(mButtonListener);
-        findViewById(R.id.button_zero).setOnClickListener(mButtonListener);
+        for (SDButton button : SDButton.values()) {
+            findViewById(button.getResId()).setOnClickListener(mButtonListener);
+        }
 
         mMediaRouter = MediaRouter.getInstance(getApplicationContext());
 
         mMediaRouteSelector = new MediaRouteSelector.Builder()
-                .addControlCategory(CastMediaControlIntent.categoryForCast(APPLICATION_ID))
+                .addControlCategory(CastMediaControlIntent.categoryForCast(getApplicationContext().getString(R.string.application_id)))
                 .build();
     }
 
@@ -170,7 +232,7 @@ public class SDMainActivity extends ActionBarActivity
             //reconnectChannels();
         } else {
             try {
-                Cast.CastApi.launchApplication(mApiClient, APPLICATION_ID, false)
+                Cast.CastApi.launchApplication(mApiClient, getApplicationContext().getString(R.string.application_id), false)
                     .setResultCallback(
                         new ResultCallback<Cast.ApplicationConnectionResult>() {
                             @Override
@@ -188,7 +250,13 @@ public class SDMainActivity extends ActionBarActivity
 
                                     Log.d(TAG, String.format("launch success %s %s %b", sessionId, applicationStatus, wasLaunched));
 
-                                    //...
+                                    try {
+                                        Cast.CastApi.setMessageReceivedCallbacks(mApiClient,
+                                                getApplicationContext().getString(R.string.application_namespace),
+                                                SDMainActivity.this);
+                                    } catch (IOException e) {
+                                        Log.e(TAG, "Exception while creating channel", e);
+                                    }
                                 } else {
                                     Log.d(TAG, "launch failed");
                                     tearDown();
@@ -211,6 +279,12 @@ public class SDMainActivity extends ActionBarActivity
     @Override
     public void onConnectionFailed(ConnectionResult result) {
         tearDown();
+    }
+
+    @Override
+    public void onMessageReceived(CastDevice castDevice, String namespace,
+                                  String message) {
+        Log.d(TAG, "onMessageReceived: " + message);
     }
 
     private void tearDown() {
