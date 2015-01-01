@@ -14,7 +14,7 @@ public enum SDButton {
     BUTTON_EIGHT(R.id.button_eight, "8"),
     BUTTON_NINE(R.id.button_nine, "9"),
     BUTTON_ZERO(R.id.button_zero, "0"),
-    BUTTON_TRUFAX(R.id.button_trufax, "cycle");
+    BUTTON_TEXT(R.id.button_text, "cycle");
 
     private final int mResId;
     private final String mKey;
