@@ -44,6 +44,8 @@ public class SDFragment extends Fragment
     private static final String SDTV_REMOTE_CONTROL_KEY = "rc";
     private static final String SDTV_KEY_KEY = "key";
 
+    private String mSessionId;
+
     private Cast.Listener mCastClientListener = new Cast.Listener() {
         @Override
         public void onApplicationStatusChanged() {
@@ -96,7 +98,9 @@ public class SDFragment extends Fragment
     private MediaRouter mMediaRouter;
     private MediaRouteSelector mMediaRouteSelector;
     private CastDevice mSelectedDevice;
+
     private boolean mWaitingForReconnect = false;
+    private boolean mApplicationStarted = false;
 
     private final View.OnClickListener mButtonListener = new View.OnClickListener() {
         @Override
@@ -220,11 +224,13 @@ public class SDFragment extends Fragment
                                         if (status.isSuccess()) {
                                             ApplicationMetadata applicationMetadata =
                                                     result.getApplicationMetadata();
-                                            String sessionId = result.getSessionId();
+                                            mSessionId = result.getSessionId();
                                             String applicationStatus = result.getApplicationStatus();
                                             boolean wasLaunched = result.getWasLaunched();
 
-                                            Log.d(TAG, String.format("launch success %s %s %b", sessionId, applicationStatus, wasLaunched));
+                                            Log.d(TAG, String.format("launch success %s %s %b", mSessionId, applicationStatus, wasLaunched));
+
+                                            mApplicationStarted = true;
 
                                             connectChannel();
                                         } else {
@@ -270,6 +276,28 @@ public class SDFragment extends Fragment
     }
 
     private void tearDown() {
+        Log.d(TAG, "teardown");
+        if (mApiClient != null) {
+            if (mApplicationStarted) {
+                if (mApiClient.isConnected() || mApiClient.isConnecting()) {
+                    try {
+                        Cast.CastApi.stopApplication(mApiClient, mSessionId);
+                        Cast.CastApi.removeMessageReceivedCallbacks(
+                                    mApiClient,
+                                    getActivity().getApplicationContext().getString(R.string.application_namespace));
+                    } catch (IOException e) {
+                        Log.e(TAG, "Exception while removing channel", e);
+                    }
+                    mApiClient.disconnect();
+                }
+                mApplicationStarted = false;
+            }
+            mApiClient = null;
+        }
+        mSelectedDevice = null;
+        mWaitingForReconnect = false;
+        mSessionId = null;
 
+        mMediaRouter.selectRoute(mMediaRouter.getDefaultRoute());
     }
 }
