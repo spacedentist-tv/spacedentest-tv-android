@@ -10,7 +10,6 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.Button;
 
 import com.google.android.gms.cast.ApplicationMetadata;
 import com.google.android.gms.cast.Cast;
@@ -32,49 +31,12 @@ public class SDMainActivity extends ActionBarActivity
                                        Cast.MessageReceivedCallback {
 
     private static final String TAG = SDMainActivity.class.getSimpleName();
+
+    private static final String SAVE_SELECTED_DEVICE_KEY = "device";
+
     private static final String SDTV_MSG_KEY = "sdtv_msg";
     private static final String SDTV_REMOTE_CONTROL_KEY = "rc";
     private static final String SDTV_KEY_KEY = "key";
-
-    enum SDButton {
-        BUTTON_ONE(R.id.button_one, "1"),
-        BUTTON_TWO(R.id.button_two, "2"),
-        BUTTON_THREE(R.id.button_three, "3"),
-        BUTTON_FOUR(R.id.button_four, "4"),
-        BUTTON_FIVE(R.id.button_five, "5"),
-        BUTTON_SIX(R.id.button_six, "6"),
-        BUTTON_SEVEN(R.id.button_seven, "7"),
-        BUTTON_EIGHT(R.id.button_eight, "8"),
-        BUTTON_NINE(R.id.button_nine, "9"),
-        BUTTON_ZERO(R.id.button_zero, "0"),
-        BUTTON_TRUFAX(R.id.button_trufax, "cycle");
-
-        private final int mResId;
-        private final String mKey;
-
-        SDButton(int resId, String key) {
-            mResId = resId;
-            mKey = key;
-        }
-
-        public int getResId() {
-            return mResId;
-        }
-
-        public String getKey() {
-            return mKey;
-        }
-
-        public static SDButton fromResId(int resId) {
-            for (SDButton button : SDButton.values()) {
-                if (button.getResId() == resId) {
-                    return button;
-                }
-            }
-
-            return null;
-        }
-    }
 
     private Cast.Listener mCastClientListener = new Cast.Listener() {
         @Override
@@ -101,19 +63,7 @@ public class SDMainActivity extends ActionBarActivity
 
         @Override
         public void onRouteSelected(MediaRouter router, MediaRouter.RouteInfo info) {
-            mSelectedDevice = CastDevice.getFromBundle(info.getExtras());
-            //String routeId = info.getId();
-
-            Cast.CastOptions.Builder apiOptionsBuilder = Cast.CastOptions
-                    .builder(mSelectedDevice, mCastClientListener);
-
-            mApiClient = new GoogleApiClient.Builder(SDMainActivity.this)
-                    .addApi(Cast.API, apiOptionsBuilder.build())
-                    .addConnectionCallbacks(SDMainActivity.this)
-                    .addOnConnectionFailedListener(SDMainActivity.this)
-                    .build();
-
-            mApiClient.connect();
+            clientConnect(CastDevice.getFromBundle(info.getExtras()));
         }
 
         @Override
@@ -123,12 +73,28 @@ public class SDMainActivity extends ActionBarActivity
         }
     }
 
+    private void clientConnect(CastDevice castDevice) {
+        mSelectedDevice = castDevice;
+
+        Cast.CastOptions.Builder apiOptionsBuilder = Cast.CastOptions
+                .builder(mSelectedDevice, mCastClientListener);
+
+        mApiClient = new GoogleApiClient.Builder(SDMainActivity.this)
+                .addApi(Cast.API, apiOptionsBuilder.build())
+                .addConnectionCallbacks(SDMainActivity.this)
+                .addOnConnectionFailedListener(SDMainActivity.this)
+                .build();
+
+        mApiClient.connect();
+    }
+
     private final MediaRouterCallback mMediaRouterCallback = new MediaRouterCallback();
     private GoogleApiClient mApiClient;
     private MediaRouter mMediaRouter;
     private MediaRouteSelector mMediaRouteSelector;
     private CastDevice mSelectedDevice;
     private boolean mWaitingForReconnect = false;
+
     private final View.OnClickListener mButtonListener = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
@@ -161,6 +127,9 @@ public class SDMainActivity extends ActionBarActivity
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        Log.d(TAG, "onCreate");
+
         setContentView(R.layout.activity_main);
 
         for (SDButton button : SDButton.values()) {
@@ -172,6 +141,19 @@ public class SDMainActivity extends ActionBarActivity
         mMediaRouteSelector = new MediaRouteSelector.Builder()
                 .addControlCategory(CastMediaControlIntent.categoryForCast(getApplicationContext().getString(R.string.application_id)))
                 .build();
+
+        if (savedInstanceState != null) {
+            // restore the api client and such
+            CastDevice selectedDevice = savedInstanceState.getParcelable(SAVE_SELECTED_DEVICE_KEY);
+            clientConnect(selectedDevice);
+        }
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+
+        outState.putParcelable(SAVE_SELECTED_DEVICE_KEY, mSelectedDevice);
     }
 
     @Override
@@ -183,16 +165,6 @@ public class SDMainActivity extends ActionBarActivity
                 (MediaRouteActionProvider) MenuItemCompat.getActionProvider(mediaRouteMenuItem);
         mediaRouteActionProvider.setRouteSelector(mMediaRouteSelector);
         return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-
-        //int id = item.getItemId();
-        return super.onOptionsItemSelected(item);
     }
 
     @Override
@@ -229,7 +201,7 @@ public class SDMainActivity extends ActionBarActivity
 
         if (mWaitingForReconnect) {
             mWaitingForReconnect = false;
-            //reconnectChannels();
+            connectChannel();
         } else {
             try {
                 Cast.CastApi.launchApplication(mApiClient, getApplicationContext().getString(R.string.application_id), false)
@@ -250,13 +222,7 @@ public class SDMainActivity extends ActionBarActivity
 
                                     Log.d(TAG, String.format("launch success %s %s %b", sessionId, applicationStatus, wasLaunched));
 
-                                    try {
-                                        Cast.CastApi.setMessageReceivedCallbacks(mApiClient,
-                                                getApplicationContext().getString(R.string.application_namespace),
-                                                SDMainActivity.this);
-                                    } catch (IOException e) {
-                                        Log.e(TAG, "Exception while creating channel", e);
-                                    }
+                                    connectChannel();
                                 } else {
                                     Log.d(TAG, "launch failed");
                                     tearDown();
@@ -271,13 +237,25 @@ public class SDMainActivity extends ActionBarActivity
         }
     }
 
+    private void connectChannel() {
+        try {
+            Cast.CastApi.setMessageReceivedCallbacks(mApiClient,
+                    getApplicationContext().getString(R.string.application_namespace),
+                    SDMainActivity.this);
+        } catch (IOException e) {
+            Log.e(TAG, "Exception while creating channel", e);
+        }
+    }
+
     @Override
     public void onConnectionSuspended(int cause) {
+        Log.d(TAG, "onConnectionSuspended: " + cause);
         mWaitingForReconnect = true;
     }
 
     @Override
     public void onConnectionFailed(ConnectionResult result) {
+        Log.d(TAG, "onConnectionFailed: " + result);
         tearDown();
     }
 
