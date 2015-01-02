@@ -5,7 +5,7 @@ android {
     buildToolsVersion "21.1.2"
 
     defaultConfig {
-        applicationId "tv.spacedentist.spacedentist_tv_android"
+        applicationId "tv.spacedentist.spacedentist_tv_android.dev"
         minSdkVersion 9
         targetSdkVersion 21
         versionCode 1
@@ -15,6 +15,12 @@ android {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+    productFlavors {
+        product {
+            applicationId "tv.spacedentist.spacedentist_tv_android"
+            versionName "1.0-dev"
         }
     }
 }
