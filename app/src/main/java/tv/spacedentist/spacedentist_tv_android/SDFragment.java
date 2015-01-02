@@ -2,6 +2,7 @@ package tv.spacedentist.spacedentist_tv_android;
 
 
 
+import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.MenuItemCompat;
@@ -30,6 +31,8 @@ import org.json.JSONObject;
 import java.io.IOException;
 import java.util.zip.Inflater;
 
+import tv.spacedentist.spacedentist_tv_android.view.SDTextView;
+
 /**
  * Created by coffey on 01/01/15.
  */
@@ -44,14 +47,26 @@ public class SDFragment extends Fragment
     private static final String SDTV_REMOTE_CONTROL_KEY = "rc";
     private static final String SDTV_KEY_KEY = "key";
 
+    private String mApplicationNamespace;
+    private String mApplicationId;
+
     private String mSessionId;
+    private String mStatus;
 
     private Cast.Listener mCastClientListener = new Cast.Listener() {
         @Override
         public void onApplicationStatusChanged() {
             if (mApiClient != null) {
-                String status = Cast.CastApi.getApplicationStatus(mApiClient);
-                Log.d(TAG, "onApplicationStatusChanged: " + status);
+                mStatus = Cast.CastApi.getApplicationStatus(mApiClient);
+                Log.d(TAG, "onApplicationStatusChanged: " + mStatus);
+
+                SDTextView statusTextView = ((SDTextView) getView().findViewById(R.id.status_text));
+
+                if (mStatus != null && !mStatus.isEmpty()) {
+                    statusTextView.setText(mStatus);
+                } else {
+                    statusTextView.setText(R.string.null_status);
+                }
             }
         }
 
@@ -91,6 +106,24 @@ public class SDFragment extends Fragment
             tearDown();
             mSelectedDevice = null;
         }
+
+        private void setDisconnectedText(MediaRouter router) {
+            ((SDTextView) getView().findViewById(R.id.disconnected)).setText((router.getRoutes().size() == 0) ?
+                                                                                R.string.no_chromecast_text:
+                                                                                R.string.disconnected_text);
+        }
+
+        @Override
+        public void onRouteAdded(MediaRouter router, MediaRouter.RouteInfo route) {
+            super.onRouteAdded(router, route);
+            setDisconnectedText(router);
+        }
+
+        @Override
+        public void onRouteRemoved(MediaRouter router, MediaRouter.RouteInfo route) {
+            super.onRouteRemoved(router, route);
+            setDisconnectedText(router);
+        }
     }
 
     private final MediaRouterCallback mMediaRouterCallback = new MediaRouterCallback();
@@ -114,7 +147,7 @@ public class SDFragment extends Fragment
                     message.put(SDTV_MSG_KEY, SDTV_REMOTE_CONTROL_KEY);
                     message.put(SDTV_KEY_KEY, button.getKey());
 
-                    Cast.CastApi.sendMessage(mApiClient, getActivity().getApplicationContext().getString(R.string.application_namespace), message.toString())
+                    Cast.CastApi.sendMessage(mApiClient, mApplicationNamespace, message.toString())
                             .setResultCallback(
                                     new ResultCallback<Status>() {
                                         @Override
@@ -163,15 +196,21 @@ public class SDFragment extends Fragment
         super.onActivityCreated(savedInstanceState);
         Log.d(TAG, "onActivityCreated");
 
+        final Context context = getActivity().getApplicationContext();
+        mApplicationId = context.getString(R.string.application_id);
+        mApplicationNamespace = context.getString(R.string.application_namespace);
+
         for (SDButton button : SDButton.values()) {
             getView().findViewById(button.getResId()).setOnClickListener(mButtonListener);
         }
 
-        mMediaRouter = MediaRouter.getInstance(getActivity().getApplicationContext());
+        mMediaRouter = MediaRouter.getInstance(context);
 
         mMediaRouteSelector = new MediaRouteSelector.Builder()
-                .addControlCategory(CastMediaControlIntent.categoryForCast(getActivity().getApplicationContext().getString(R.string.application_id)))
+                .addControlCategory(CastMediaControlIntent.categoryForCast(mApplicationId))
                 .build();
+
+        showCorrectView();
     }
 
     @Override
@@ -212,7 +251,7 @@ public class SDFragment extends Fragment
             connectChannel();
         } else {
             try {
-                Cast.CastApi.launchApplication(mApiClient, getActivity().getApplicationContext().getString(R.string.application_id), false)
+                Cast.CastApi.launchApplication(mApiClient, mApplicationId, false)
                         .setResultCallback(
                                 new ResultCallback<Cast.ApplicationConnectionResult>() {
                                     @Override
@@ -231,7 +270,7 @@ public class SDFragment extends Fragment
                                             Log.d(TAG, String.format("launch success %s %s %b", mSessionId, applicationStatus, wasLaunched));
 
                                             mApplicationStarted = true;
-
+                                            showCorrectView();
                                             connectChannel();
                                         } else {
                                             Log.d(TAG, "launch failed");
@@ -247,10 +286,15 @@ public class SDFragment extends Fragment
         }
     }
 
+    private void showCorrectView() {
+        getView().findViewById(R.id.disconnected).setVisibility(mApplicationStarted ? View.GONE : View.VISIBLE);
+        getView().findViewById(R.id.connected).setVisibility(mApplicationStarted ? View.VISIBLE : View.GONE);
+    }
+
     private void connectChannel() {
         try {
             Cast.CastApi.setMessageReceivedCallbacks(mApiClient,
-                    getActivity().getApplicationContext().getString(R.string.application_namespace),
+                    mApplicationNamespace,
                     SDFragment.this);
         } catch (IOException e) {
             Log.e(TAG, "Exception while creating channel", e);
@@ -284,7 +328,7 @@ public class SDFragment extends Fragment
                         Cast.CastApi.stopApplication(mApiClient, mSessionId);
                         Cast.CastApi.removeMessageReceivedCallbacks(
                                     mApiClient,
-                                    getActivity().getApplicationContext().getString(R.string.application_namespace));
+                                    mApplicationNamespace);
                     } catch (IOException e) {
                         Log.e(TAG, "Exception while removing channel", e);
                     }
@@ -299,5 +343,7 @@ public class SDFragment extends Fragment
         mSessionId = null;
 
         mMediaRouter.selectRoute(mMediaRouter.getDefaultRoute());
+
+        showCorrectView();
     }
 }

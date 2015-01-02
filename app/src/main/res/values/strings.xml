@@ -1,11 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <string name="app_name">SDTV</string>
-    <string name="activity_name">SPACEDENTIST.TV</string>
+    <string name="app_name">spacedentist.tv</string>
+    <string name="activity_name">Spacedentist</string>
     <string name="media_route_menu_title">Cast</string>
 
     <string name="application_id">E7EFD798</string>
     <string name="application_namespace">urn:x-cast:tv.spacedentist.cast</string>
+
+    <string name="no_chromecast_text">You need a Chromecast on your network to start Spacedentist.tv.</string>
+    <string name="disconnected_text">Please choose a Chromecast to start Spacedentist.tv on.</string>
+
+    <string name="null_status">null or empty status string.</string>
 
 </resources>
