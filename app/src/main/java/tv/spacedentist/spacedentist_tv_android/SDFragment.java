@@ -60,13 +60,7 @@ public class SDFragment extends Fragment
                 mStatus = Cast.CastApi.getApplicationStatus(mApiClient);
                 Log.d(TAG, "onApplicationStatusChanged: " + mStatus);
 
-                SDTextView statusTextView = ((SDTextView) getView().findViewById(R.id.status_text));
-
-                if (mStatus != null && !mStatus.isEmpty()) {
-                    statusTextView.setText(mStatus);
-                } else {
-                    statusTextView.setText(R.string.null_status);
-                }
+                setStatusText();
             }
         }
 
@@ -191,6 +185,11 @@ public class SDFragment extends Fragment
         mediaRouteActionProvider.setRouteSelector(mMediaRouteSelector);
     }
 
+    private void setStatusText() {
+        SDTextView statusTextView = ((SDTextView) getView().findViewById(R.id.status_text));
+        statusTextView.setText(mStatus != null ? mStatus : "");
+    }
+
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
@@ -211,6 +210,7 @@ public class SDFragment extends Fragment
                 .build();
 
         showCorrectView();
+        setStatusText();
     }
 
     @Override

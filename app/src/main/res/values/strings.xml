@@ -9,8 +9,6 @@
     <string name="application_namespace">urn:x-cast:tv.spacedentist.cast</string>
 
     <string name="no_chromecast_text">You need a Chromecast on your network to start Spacedentist.tv.</string>
-    <string name="disconnected_text">Please choose a Chromecast to start Spacedentist.tv on.</string>
-
-    <string name="null_status">null or empty status string.</string>
+    <string name="disconnected_text">Please choose a Chromecast to start Spacedentist.tv.</string>
 
 </resources>
