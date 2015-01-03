@@ -318,15 +318,22 @@ public class SDFragment extends Fragment
     }
 
     private void showCorrectView() {
-        if (mApiClient != null && mApiClient.isConnecting()) {
-            // we are connecting
-            getView().findViewById(R.id.connecting_spinner).setVisibility(View.VISIBLE);
-            getView().findViewById(R.id.disconnected).setVisibility(View.GONE);
-            getView().findViewById(R.id.connected).setVisibility(View.GONE);
-        } else {
-            getView().findViewById(R.id.connecting_spinner).setVisibility(View.GONE);
-            getView().findViewById(R.id.disconnected).setVisibility(mApplicationStarted ? View.GONE : View.VISIBLE);
-            getView().findViewById(R.id.connected).setVisibility(mApplicationStarted ? View.VISIBLE : View.GONE);
+        View mainView = getView();
+
+        if (mainView != null) {
+            // This can get called after the view is destroyed
+            // in that case we don't need to do anything and it's better to not crash :)
+
+            if (mApiClient != null && mApiClient.isConnecting()) {
+                // we are connecting
+                mainView.findViewById(R.id.connecting_spinner).setVisibility(View.VISIBLE);
+                mainView.findViewById(R.id.disconnected).setVisibility(View.GONE);
+                mainView.findViewById(R.id.connected).setVisibility(View.GONE);
+            } else {
+                mainView.findViewById(R.id.connecting_spinner).setVisibility(View.GONE);
+                mainView.findViewById(R.id.disconnected).setVisibility(mApplicationStarted ? View.GONE : View.VISIBLE);
+                mainView.findViewById(R.id.connected).setVisibility(mApplicationStarted ? View.VISIBLE : View.GONE);
+            }
         }
     }
 
