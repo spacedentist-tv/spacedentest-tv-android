@@ -11,4 +11,16 @@
     <string name="no_chromecast_text">You need a Chromecast on your network to start Spacedentist.tv.</string>
     <string name="disconnected_text">Please choose a Chromecast to start Spacedentist.tv.</string>
 
+    <string name="keypad_one">1</string>
+    <string name="keypad_two">2</string>
+    <string name="keypad_three">3</string>
+    <string name="keypad_four">4</string>
+    <string name="keypad_five">5</string>
+    <string name="keypad_six">6</string>
+    <string name="keypad_seven">7</string>
+    <string name="keypad_eight">8</string>
+    <string name="keypad_nine">9</string>
+    <string name="keypad_zero">0</string>
+    <string name="keypad_text">TEXT</string>
+
 </resources>
