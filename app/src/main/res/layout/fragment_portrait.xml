@@ -40,7 +40,9 @@
 
         </LinearLayout>
 
-        <include layout="@layout/keypad"/>
+        <include layout="@layout/keypad"
+            android:layout_height="wrap_content"
+            android:layout_width="match_parent"/>
 
     </LinearLayout>
 

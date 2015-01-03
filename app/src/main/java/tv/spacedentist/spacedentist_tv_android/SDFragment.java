@@ -3,6 +3,7 @@ package tv.spacedentist.spacedentist_tv_android;
 
 
 import android.content.Context;
+import android.content.res.Configuration;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.MenuItemCompat;
@@ -29,7 +30,6 @@ import com.google.android.gms.common.api.Status;
 import org.json.JSONObject;
 
 import java.io.IOException;
-import java.util.zip.Inflater;
 
 import tv.spacedentist.spacedentist_tv_android.view.SDTextView;
 
@@ -170,7 +170,12 @@ public class SDFragment extends Fragment
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         Log.d(TAG, "onCreateView");
-        return inflater.inflate(R.layout.fragment, container, false);
+
+        int layoutId = (getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) ?
+                R.layout.fragment_landscape:
+                R.layout.fragment_portrait;
+
+        return inflater.inflate(layoutId, container, false);
     }
 
     @Override
