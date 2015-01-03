@@ -1,16 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
+    <!-- app names, etc -->
     <string name="app_name">spacedentist.tv</string>
     <string name="activity_name">Spacedentist</string>
     <string name="media_route_menu_title">Cast</string>
 
+    <!-- application ids -->
     <string name="application_id">E7EFD798</string>
     <string name="application_namespace">urn:x-cast:tv.spacedentist.cast</string>
 
+    <!-- text for the two disconnected states -->
     <string name="no_chromecast_text">You need a Chromecast on your network to start Spacedentist.tv.</string>
     <string name="disconnected_text">Please choose a Chromecast to start Spacedentist.tv.</string>
 
+    <!-- text for the keypad -->
     <string name="keypad_one">1</string>
     <string name="keypad_two">2</string>
     <string name="keypad_three">3</string>

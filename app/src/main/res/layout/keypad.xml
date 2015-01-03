@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <TableLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content">
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:stretchColumns="*">
 
     <TableRow
         android:layout_width="match_parent"
@@ -15,7 +16,7 @@
             android:text="@string/keypad_one"
             android:textSize="@dimen/button_text_size"
             android:id="@+id/button_one"
-            android:layout_weight="1"/>
+            android:layout_column="0"/>
 
         <tv.spacedentist.spacedentist_tv_android.view.SDButtonView
             android:layout_width="wrap_content"
@@ -23,7 +24,7 @@
             android:text="@string/keypad_two"
             android:textSize="@dimen/button_text_size"
             android:id="@+id/button_two"
-            android:layout_weight="1"/>
+            android:layout_column="1"/>
 
         <tv.spacedentist.spacedentist_tv_android.view.SDButtonView
             android:layout_width="wrap_content"
@@ -31,7 +32,7 @@
             android:text="@string/keypad_three"
             android:textSize="@dimen/button_text_size"
             android:id="@+id/button_three"
-            android:layout_weight="1" />
+            android:layout_column="2"/>
 
     </TableRow>
 
@@ -47,7 +48,7 @@
             android:text="@string/keypad_four"
             android:textSize="@dimen/button_text_size"
             android:id="@+id/button_four"
-            android:layout_weight="1" />
+            android:layout_column="0"/>
 
         <tv.spacedentist.spacedentist_tv_android.view.SDButtonView
             android:layout_width="wrap_content"
@@ -55,7 +56,7 @@
             android:text="@string/keypad_five"
             android:textSize="@dimen/button_text_size"
             android:id="@+id/button_five"
-            android:layout_weight="1" />
+            android:layout_column="1"/>
 
         <tv.spacedentist.spacedentist_tv_android.view.SDButtonView
             android:layout_width="wrap_content"
@@ -63,7 +64,7 @@
             android:text="@string/keypad_six"
             android:textSize="@dimen/button_text_size"
             android:id="@+id/button_six"
-            android:layout_weight="1" />
+            android:layout_column="2"/>
 
     </TableRow>
 
@@ -79,7 +80,7 @@
             android:text="@string/keypad_seven"
             android:textSize="@dimen/button_text_size"
             android:id="@+id/button_seven"
-            android:layout_weight="1"/>
+            android:layout_column="0"/>
 
         <tv.spacedentist.spacedentist_tv_android.view.SDButtonView
             android:layout_width="wrap_content"
@@ -87,7 +88,7 @@
             android:text="@string/keypad_eight"
             android:textSize="@dimen/button_text_size"
             android:id="@+id/button_eight"
-            android:layout_weight="1"/>
+            android:layout_column="1"/>
 
         <tv.spacedentist.spacedentist_tv_android.view.SDButtonView
             android:layout_width="wrap_content"
@@ -95,7 +96,7 @@
             android:text="@string/keypad_nine"
             android:textSize="@dimen/button_text_size"
             android:id="@+id/button_nine"
-            android:layout_weight="1"/>
+            android:layout_column="2"/>
 
     </TableRow>
 
@@ -111,7 +112,7 @@
             android:text="@string/keypad_text"
             android:textSize="@dimen/button_text_size"
             android:id="@+id/button_text"
-            android:layout_weight="1" />
+            android:layout_column="0"/>
 
         <tv.spacedentist.spacedentist_tv_android.view.SDButtonView
             android:layout_width="wrap_content"
@@ -119,17 +120,8 @@
             android:text="@string/keypad_zero"
             android:textSize="@dimen/button_text_size"
             android:id="@+id/button_zero"
-            android:layout_weight="1" />
-
-        <tv.spacedentist.spacedentist_tv_android.view.SDButtonView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text=""
-            android:textSize="@dimen/button_text_size"
-            android:id="@+id/button_unused"
-            android:layout_weight="1" />
+            android:layout_column="1"/>
 
     </TableRow>
-
 
 </TableLayout>

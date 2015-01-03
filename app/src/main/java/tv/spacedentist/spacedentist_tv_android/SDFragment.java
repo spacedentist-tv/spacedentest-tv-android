@@ -77,34 +77,32 @@ public class SDFragment extends Fragment
         }
     };
 
+    private void connect(MediaRouter.RouteInfo routeInfo) {
+        mSelectedDevice = CastDevice.getFromBundle(routeInfo.getExtras());
+
+        Cast.CastOptions.Builder apiOptionsBuilder = Cast.CastOptions.builder(mSelectedDevice, mCastClientListener);
+
+        mApiClient = new GoogleApiClient.Builder(getActivity().getApplicationContext())
+                .addApi(Cast.API, apiOptionsBuilder.build())
+                .addConnectionCallbacks(SDFragment.this)
+                .addOnConnectionFailedListener(SDFragment.this)
+                .build();
+
+        mApiClient.connect();
+        showCorrectView();
+    }
+
     private class MediaRouterCallback extends MediaRouter.Callback {
 
         @Override
-        public void onRouteSelected(MediaRouter router, MediaRouter.RouteInfo info) {
-            mSelectedDevice = CastDevice.getFromBundle(info.getExtras());
-
-            Cast.CastOptions.Builder apiOptionsBuilder = Cast.CastOptions
-                    .builder(mSelectedDevice, mCastClientListener);
-
-            mApiClient = new GoogleApiClient.Builder(getActivity().getApplicationContext())
-                    .addApi(Cast.API, apiOptionsBuilder.build())
-                    .addConnectionCallbacks(SDFragment.this)
-                    .addOnConnectionFailedListener(SDFragment.this)
-                    .build();
-
-            mApiClient.connect();
+        public void onRouteSelected(MediaRouter router, MediaRouter.RouteInfo routeInfo) {
+            connect(routeInfo);
         }
 
         @Override
         public void onRouteUnselected(MediaRouter router, MediaRouter.RouteInfo info) {
             tearDown();
             mSelectedDevice = null;
-        }
-
-        private void setDisconnectedText(MediaRouter router) {
-            ((SDTextView) getView().findViewById(R.id.disconnected)).setText((router.getRoutes().size() == 0) ?
-                                                                                R.string.no_chromecast_text:
-                                                                                R.string.disconnected_text);
         }
 
         @Override
@@ -171,6 +169,8 @@ public class SDFragment extends Fragment
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         Log.d(TAG, "onCreateView");
 
+        mWaitingForReconnect = false;
+
         int layoutId = (getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) ?
                 R.layout.fragment_landscape:
                 R.layout.fragment_portrait;
@@ -195,6 +195,12 @@ public class SDFragment extends Fragment
         statusTextView.setText(mStatus != null ? mStatus : "");
     }
 
+    private void setDisconnectedText(MediaRouter router) {
+        ((SDTextView) getView().findViewById(R.id.disconnected)).setText((router.getRoutes().size() == 0) ?
+                R.string.no_chromecast_text:
+                R.string.disconnected_text);
+    }
+
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
@@ -214,8 +220,17 @@ public class SDFragment extends Fragment
                 .addControlCategory(CastMediaControlIntent.categoryForCast(mApplicationId))
                 .build();
 
+        final MediaRouter.RouteInfo selectedRoute = mMediaRouter.getSelectedRoute();
+        if (mApiClient == null && selectedRoute != mMediaRouter.getDefaultRoute()) {
+            // This is a restart after being closed the the route is still selected
+            // probably after exiting the app with the back button, but could be
+            // stopped in other ways.
+            connect(selectedRoute);
+        }
+
         showCorrectView();
         setStatusText();
+        setDisconnectedText(mMediaRouter);
     }
 
     @Override
@@ -245,6 +260,12 @@ public class SDFragment extends Fragment
         mMediaRouter.removeCallback(mMediaRouterCallback);
 
         super.onStop();
+    }
+
+    @Override
+    public void onDestroy() {
+        Log.d(TAG, "onDestroy");
+        super.onDestroy();
     }
 
     @Override
@@ -292,8 +313,16 @@ public class SDFragment extends Fragment
     }
 
     private void showCorrectView() {
-        getView().findViewById(R.id.disconnected).setVisibility(mApplicationStarted ? View.GONE : View.VISIBLE);
-        getView().findViewById(R.id.connected).setVisibility(mApplicationStarted ? View.VISIBLE : View.GONE);
+        if (mApiClient != null && mApiClient.isConnecting()) {
+            // we are connecting
+            getView().findViewById(R.id.connecting_spinner).setVisibility(View.VISIBLE);
+            getView().findViewById(R.id.disconnected).setVisibility(View.GONE);
+            getView().findViewById(R.id.connected).setVisibility(View.GONE);
+        } else {
+            getView().findViewById(R.id.connecting_spinner).setVisibility(View.GONE);
+            getView().findViewById(R.id.disconnected).setVisibility(mApplicationStarted ? View.GONE : View.VISIBLE);
+            getView().findViewById(R.id.connected).setVisibility(mApplicationStarted ? View.VISIBLE : View.GONE);
+        }
     }
 
     private void connectChannel() {
