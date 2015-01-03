@@ -17,6 +17,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TableLayout;
 
 import com.google.android.gms.cast.ApplicationMetadata;
 import com.google.android.gms.cast.Cast;
@@ -209,6 +210,10 @@ public class SDFragment extends Fragment
         final Context context = getActivity().getApplicationContext();
         mApplicationId = context.getString(R.string.application_id);
         mApplicationNamespace = context.getString(R.string.application_namespace);
+
+        if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT) {
+            ((TableLayout) getView().findViewById(R.id.keypad)).setStretchAllColumns(true);
+        }
 
         for (SDButton button : SDButton.values()) {
             getView().findViewById(button.getResId()).setOnClickListener(mButtonListener);
