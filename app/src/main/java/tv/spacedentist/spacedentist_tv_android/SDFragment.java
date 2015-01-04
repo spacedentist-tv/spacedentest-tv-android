@@ -109,13 +109,13 @@ public class SDFragment extends Fragment
         @Override
         public void onRouteAdded(MediaRouter router, MediaRouter.RouteInfo route) {
             super.onRouteAdded(router, route);
-            setDisconnectedText(router);
+            setDisconnectedText();
         }
 
         @Override
         public void onRouteRemoved(MediaRouter router, MediaRouter.RouteInfo route) {
             super.onRouteRemoved(router, route);
-            setDisconnectedText(router);
+            setDisconnectedText();
         }
     }
 
@@ -196,10 +196,14 @@ public class SDFragment extends Fragment
         statusTextView.setText(mStatus != null ? mStatus : "");
     }
 
-    private void setDisconnectedText(MediaRouter router) {
-        ((SDTextView) getView().findViewById(R.id.disconnected)).setText((router.getRoutes().size() == 0) ?
-                R.string.no_chromecast_text:
-                R.string.disconnected_text);
+    private void setDisconnectedText() {
+        boolean routeAvailable = mMediaRouter.isRouteAvailable(mMediaRouteSelector,
+                                            MediaRouter.AVAILABILITY_FLAG_IGNORE_DEFAULT_ROUTE);
+
+        Log.d(TAG, String.format("setDisconnectedText: %b", routeAvailable));
+        ((SDTextView) getView().findViewById(R.id.disconnected)).setText((routeAvailable) ?
+                        R.string.disconnected_text:
+                        R.string.no_chromecast_text);
     }
 
     @Override
@@ -235,18 +239,20 @@ public class SDFragment extends Fragment
 
         showCorrectView();
         setStatusText();
-        setDisconnectedText(mMediaRouter);
+        setDisconnectedText();
     }
 
     @Override
     public void onResume() {
         super.onResume();
+        Log.d(TAG, "onResume()");
         mMediaRouter.addCallback(mMediaRouteSelector, mMediaRouterCallback,
                 MediaRouter.CALLBACK_FLAG_REQUEST_DISCOVERY);
     }
 
     @Override
     public void onPause() {
+        Log.d(TAG, "onPause()");
         mMediaRouter.removeCallback(mMediaRouterCallback);
         super.onPause();
     }
@@ -254,6 +260,7 @@ public class SDFragment extends Fragment
     @Override
     public void onStart() {
         super.onStart();
+        Log.d(TAG, "onStart()");
         mMediaRouter.addCallback(mMediaRouteSelector, mMediaRouterCallback,
                 MediaRouter.CALLBACK_FLAG_REQUEST_DISCOVERY);
     }
