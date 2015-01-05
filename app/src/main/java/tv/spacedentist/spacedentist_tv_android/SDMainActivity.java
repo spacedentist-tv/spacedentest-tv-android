@@ -1,7 +1,5 @@
 package tv.spacedentist.spacedentist_tv_android;
 
-import android.graphics.Color;
-import android.graphics.drawable.ColorDrawable;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
@@ -25,7 +23,5 @@ public class SDMainActivity extends ActionBarActivity {
         LayoutInflater inflater = LayoutInflater.from(this);
         View titleView = inflater.inflate(R.layout.action_bar_title, null);
         actionBar.setCustomView(titleView);
-
-        actionBar.setBackgroundDrawable(new ColorDrawable(Color.argb(128, 0, 0, 0)));
     }
 }

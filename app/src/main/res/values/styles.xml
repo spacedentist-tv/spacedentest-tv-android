@@ -1,11 +1,20 @@
 <resources xmlns:tools="http://schemas.android.com/tools" xmlns:android="http://schemas.android.com/apk/res/android">
 
     <!-- Base application theme. -->
-    <style name="AppTheme" parent="Theme.AppCompat">
+    <style name="SDAppTheme" parent="Theme.AppCompat">
         <item tools:targetApi="11" name="android:windowActionBarOverlay">true</item>
+        <item tools:targetApi="11" name="android:actionBarStyle">@style/SDActionBar</item>
 
         <!-- Support library compatibility -->
         <item name="windowActionBarOverlay">true</item>
+        <item name="actionBarStyle">@style/SDActionBar</item>
+    </style>
+
+    <style name="SDActionBar" parent="Theme.AppCompat.Light.DarkActionBar">
+        <item name="android:background">@color/sd_action_bar_background</item>
+        <item name="android:textColor">@color/sd_text</item>
+
+        <item name="background">@color/sd_action_bar_background</item>
     </style>
 
 </resources>
