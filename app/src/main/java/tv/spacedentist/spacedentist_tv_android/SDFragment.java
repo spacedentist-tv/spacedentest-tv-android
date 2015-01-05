@@ -173,8 +173,8 @@ public class SDFragment extends Fragment
         mWaitingForReconnect = false;
 
         int layoutId = (getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) ?
-                R.layout.fragment_landscape:
-                R.layout.fragment_portrait;
+                R.layout.fragment:
+                R.layout.fragment;
 
         return inflater.inflate(layoutId, container, false);
     }
@@ -192,8 +192,8 @@ public class SDFragment extends Fragment
     }
 
     private void setStatusText() {
-        SDTextView statusTextView = ((SDTextView) getView().findViewById(R.id.status_text));
-        statusTextView.setText(mStatus != null ? mStatus : "");
+        //SDTextView statusTextView = ((SDTextView) getView().findViewById(R.id.status_text));
+        //statusTextView.setText(mStatus != null ? mStatus : "");
     }
 
     private void setDisconnectedText() {
@@ -214,10 +214,6 @@ public class SDFragment extends Fragment
         final Context context = getActivity().getApplicationContext();
         mApplicationId = context.getString(R.string.application_id);
         mApplicationNamespace = context.getString(R.string.application_namespace);
-
-        if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT) {
-            ((TableLayout) getView().findViewById(R.id.keypad)).setStretchAllColumns(true);
-        }
 
         for (SDButton button : SDButton.values()) {
             getView().findViewById(button.getResId()).setOnClickListener(mButtonListener);

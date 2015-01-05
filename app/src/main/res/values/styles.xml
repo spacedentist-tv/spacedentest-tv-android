@@ -4,6 +4,7 @@
     <style name="SDAppTheme" parent="Theme.AppCompat">
         <item tools:targetApi="11" name="android:windowActionBarOverlay">true</item>
         <item tools:targetApi="11" name="android:actionBarStyle">@style/SDActionBar</item>
+        <item name="android:buttonStyle">@style/SDButton</item>item>
 
         <!-- Support library compatibility -->
         <item name="windowActionBarOverlay">true</item>
@@ -15,6 +16,14 @@
         <item name="android:textColor">@color/sd_text</item>
 
         <item name="background">@color/sd_action_bar_background</item>
+    </style>
+
+    <style name="SDButton">
+        <item name="android:textColor">@color/sd_text</item>
+        <item name="android:textSize">@dimen/general_text_size</item>
+        <item name="android:width">100dp</item>
+        <item name="android:background">@android:color/transparent</item>
+        <item name="android:gravity">center</item>
     </style>
 
 </resources>
