@@ -2,4 +2,5 @@
 <resources>
     <color name="sd_action_bar_background">#80000000</color>
     <color name="sd_text">#FFFFFFFF</color>
+    <color name="sd_text_pressed">#FFAAAAAA</color>
 </resources>

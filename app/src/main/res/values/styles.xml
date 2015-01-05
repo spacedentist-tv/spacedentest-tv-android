@@ -19,7 +19,7 @@
     </style>
 
     <style name="SDButton">
-        <item name="android:textColor">@color/sd_text</item>
+        <item name="android:textColor">@drawable/sd_button</item>
         <item name="android:textSize">@dimen/general_text_size</item>
         <item name="android:width">100dp</item>
         <item name="android:background">@android:color/transparent</item>
