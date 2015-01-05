@@ -236,10 +236,6 @@ public class SDFragment extends Fragment
             // stopped in other ways.
             connect(selectedRoute);
         }
-
-        showCorrectView();
-        setStatusText();
-        setDisconnectedText();
     }
 
     @Override
@@ -248,6 +244,10 @@ public class SDFragment extends Fragment
         Log.d(TAG, "onResume()");
         mMediaRouter.addCallback(mMediaRouteSelector, mMediaRouterCallback,
                 MediaRouter.CALLBACK_FLAG_REQUEST_DISCOVERY);
+
+        showCorrectView();
+        setStatusText();
+        setDisconnectedText();
     }
 
     @Override
