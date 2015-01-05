@@ -11,8 +11,8 @@
     <string name="application_namespace">urn:x-cast:tv.spacedentist.cast</string>
 
     <!-- text for the two disconnected states -->
-    <string name="no_chromecast_text">You need a Chromecast on your network to start Spacedentist.tv.</string>
-    <string name="disconnected_text">Please choose a Chromecast to start Spacedentist.tv.</string>
+    <string name="no_chromecast_text">You need a Chromecast on your network to start Spacedentist.tv</string>
+    <string name="disconnected_text">Please choose a Chromecast to start Spacedentist.tv</string>
 
     <!-- text for the keypad -->
     <string name="keypad_one">1</string>
