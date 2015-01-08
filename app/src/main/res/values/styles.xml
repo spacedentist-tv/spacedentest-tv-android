@@ -5,6 +5,7 @@
         <item tools:targetApi="11" name="android:windowActionBarOverlay">true</item>
         <item tools:targetApi="11" name="android:actionBarStyle">@style/SDActionBar</item>
         <item name="android:buttonStyle">@style/SDButton</item>item>
+        <item name="android:imageButtonStyle">@style/SDButton</item>item>
 
         <!-- Support library compatibility -->
         <item name="windowActionBarOverlay">true</item>
@@ -19,7 +20,7 @@
     </style>
 
     <style name="SDButton">
-        <item name="android:textColor">@drawable/sd_button</item>
+        <item name="android:textColor">@drawable/sd_number_button</item>
         <item name="android:textSize">@dimen/general_text_size</item>
         <item name="android:width">100dp</item>
         <item name="android:background">@android:color/transparent</item>

@@ -110,12 +110,12 @@
         android:orientation="horizontal"
         android:layout_weight="1">
 
-        <tv.spacedentist.spacedentist_tv_android.view.SDButtonView
+        <ImageButton
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/keypad_text"
-            android:textSize="@dimen/button_text_size"
+            android:src="@drawable/sd_text_button"
             android:id="@+id/button_text"
+            android:layout_gravity="center"
             android:layout_column="0"/>
 
         <tv.spacedentist.spacedentist_tv_android.view.SDButtonView

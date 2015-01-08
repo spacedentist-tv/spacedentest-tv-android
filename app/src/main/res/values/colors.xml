@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <color name="sd_action_bar_background">#80000000</color>
-    <color name="sd_text">#FFFFFFFF</color>
-    <color name="sd_text_pressed">#FFAAAAAA</color>
+    <color name="sd_text">#eeeeee</color>
+    <color name="sd_text_pressed">#666666</color>
 </resources>
