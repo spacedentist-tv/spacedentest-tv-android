@@ -5,11 +5,11 @@ android {
     buildToolsVersion "21.1.2"
 
     defaultConfig {
-        applicationId "tv.spacedentist.spacedentist_tv_android"
+        applicationId "tv.spacedentist.android"
         minSdkVersion 9
         targetSdkVersion 21
-        versionCode 5
-        versionName "1.0.4"
+        versionCode 6
+        versionName "1.0.5"
     }
     buildTypes {
         release {
