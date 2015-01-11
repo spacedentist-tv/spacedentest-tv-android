@@ -372,9 +372,12 @@ public class SDFragment extends Fragment
         Log.d(TAG, "teardown");
         if (mApiClient != null) {
             if (mApplicationStarted) {
+                if (mApiClient.isConnected() && mSessionId != null) {
+                    Cast.CastApi.stopApplication(mApiClient, mSessionId);
+                }
+
                 if (mApiClient.isConnected() || mApiClient.isConnecting()) {
                     try {
-                        Cast.CastApi.stopApplication(mApiClient, mSessionId);
                         Cast.CastApi.removeMessageReceivedCallbacks(
                                     mApiClient,
                                     mApplicationNamespace);
