@@ -1,4 +1,4 @@
-package tv.spacedentist.spacedentist_tv_android;
+package tv.spacedentist.android;
 
 import android.app.Application;
 import android.test.ApplicationTestCase;

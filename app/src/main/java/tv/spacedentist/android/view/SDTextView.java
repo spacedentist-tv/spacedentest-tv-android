@@ -1,19 +1,19 @@
-package tv.spacedentist.spacedentist_tv_android.view;
+package tv.spacedentist.android.view;
 
 import android.content.Context;
 import android.graphics.Typeface;
 import android.util.AttributeSet;
 import android.util.Log;
-import android.widget.Button;
+import android.widget.TextView;
 
 /**
- * Created by coffey on 01/01/15.
+ * Created by coffey on 02/01/15.
  */
-public class SDButtonView extends Button {
-    private static final String TAG = SDButtonView.class.getSimpleName();
+public class SDTextView extends TextView {
+    private static final String TAG = SDTextView.class.getSimpleName();
 
-    public SDButtonView(Context context, AttributeSet attrs) {
-        super(context, attrs);
+    public SDTextView(Context context, AttributeSet attr) {
+        super(context, attr);
         try {
             Typeface tf = Typeface.createFromAsset(context.getAssets(), "fonts/BebasNeue.ttf");
             setTypeface(tf);

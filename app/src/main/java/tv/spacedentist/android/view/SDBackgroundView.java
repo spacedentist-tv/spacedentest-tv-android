@@ -1,4 +1,4 @@
-package tv.spacedentist.spacedentist_tv_android.view;
+package tv.spacedentist.android.view;
 
 import android.content.Context;
 import android.graphics.Matrix;

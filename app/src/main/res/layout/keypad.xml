@@ -14,7 +14,7 @@
         android:orientation="horizontal"
         android:layout_weight="1">
 
-        <tv.spacedentist.spacedentist_tv_android.view.SDButtonView
+        <tv.spacedentist.android.view.SDButtonView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/keypad_one"
@@ -22,7 +22,7 @@
             android:id="@+id/button_one"
             android:layout_column="0"/>
 
-        <tv.spacedentist.spacedentist_tv_android.view.SDButtonView
+        <tv.spacedentist.android.view.SDButtonView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/keypad_two"
@@ -30,7 +30,7 @@
             android:id="@+id/button_two"
             android:layout_column="1"/>
 
-        <tv.spacedentist.spacedentist_tv_android.view.SDButtonView
+        <tv.spacedentist.android.view.SDButtonView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/keypad_three"
@@ -46,7 +46,7 @@
         android:orientation="horizontal"
         android:layout_weight="1">
 
-        <tv.spacedentist.spacedentist_tv_android.view.SDButtonView
+        <tv.spacedentist.android.view.SDButtonView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/keypad_four"
@@ -54,7 +54,7 @@
             android:id="@+id/button_four"
             android:layout_column="0"/>
 
-        <tv.spacedentist.spacedentist_tv_android.view.SDButtonView
+        <tv.spacedentist.android.view.SDButtonView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/keypad_five"
@@ -62,7 +62,7 @@
             android:id="@+id/button_five"
             android:layout_column="1"/>
 
-        <tv.spacedentist.spacedentist_tv_android.view.SDButtonView
+        <tv.spacedentist.android.view.SDButtonView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/keypad_six"
@@ -78,7 +78,7 @@
         android:orientation="horizontal"
         android:layout_weight="1">
 
-        <tv.spacedentist.spacedentist_tv_android.view.SDButtonView
+        <tv.spacedentist.android.view.SDButtonView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/keypad_seven"
@@ -86,7 +86,7 @@
             android:id="@+id/button_seven"
             android:layout_column="0"/>
 
-        <tv.spacedentist.spacedentist_tv_android.view.SDButtonView
+        <tv.spacedentist.android.view.SDButtonView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/keypad_eight"
@@ -94,7 +94,7 @@
             android:id="@+id/button_eight"
             android:layout_column="1"/>
 
-        <tv.spacedentist.spacedentist_tv_android.view.SDButtonView
+        <tv.spacedentist.android.view.SDButtonView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/keypad_nine"
@@ -118,7 +118,7 @@
             android:layout_gravity="center"
             android:layout_column="0"/>
 
-        <tv.spacedentist.spacedentist_tv_android.view.SDButtonView
+        <tv.spacedentist.android.view.SDButtonView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/keypad_zero"

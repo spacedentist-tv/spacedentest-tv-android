@@ -1,4 +1,4 @@
-package tv.spacedentist.spacedentist_tv_android;
+package tv.spacedentist.android;
 
 /**
  * Created by coffey on 01/01/15.
