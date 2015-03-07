@@ -6,6 +6,7 @@
         <item tools:targetApi="11" name="android:actionBarStyle">@style/SDActionBar</item>
         <item name="android:buttonStyle">@style/SDButton</item>item>
         <item name="android:imageButtonStyle">@style/SDButton</item>item>
+        <item name="android:progressBarStyle">@style/SDProgressBar</item>
 
         <!-- Support library compatibility -->
         <item name="windowActionBarOverlay">true</item>
@@ -25,6 +26,10 @@
         <item name="android:width">100dp</item>
         <item name="android:background">@android:color/transparent</item>
         <item name="android:gravity">center</item>
+    </style>
+
+    <style name="SDProgressBar" parent="android:Widget.ProgressBar.Large">
+        <item name="android:color">@color/sd_text</item>
     </style>
 
 </resources>
