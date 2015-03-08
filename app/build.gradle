@@ -1,5 +1,18 @@
 apply plugin: 'com.android.application'
 
+def VERSION = [major: 1, minor: 1, patch: 0, build: 0]
+
+def getVersionCode = { version ->
+    return version.major * 134217728 +
+            version.minor * 2097152 +
+            version.patch * 32768 +
+            version.build * 16
+}
+
+def getVersionName = { version ->
+    return "$version.major.$version.minor.$version.patch"
+}
+
 android {
     compileSdkVersion 21
     buildToolsVersion "21.1.2"
@@ -8,13 +21,28 @@ android {
         applicationId "tv.spacedentist.android"
         minSdkVersion 9
         targetSdkVersion 21
-        versionCode 7
-        versionName "1.0.6"
+        versionCode getVersionCode(VERSION)
+        versionName getVersionName(VERSION)
+    }
+    signingConfigs {
+        release {
+            def propsFile = rootProject.file('keystore.properties')
+
+            if (propsFile.exists()) {
+                def props = new Properties()
+                props.load(new FileInputStream(propsFile))
+                storeFile = file(props['key.storeFile'])
+                storePassword = props['key.storePassword']
+                keyAlias = props['key.keyAlias']
+                keyPassword = props['key.keyPassword']
+            }
+        }
     }
     buildTypes {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            signingConfig signingConfigs.release
         }
     }
     productFlavors {
@@ -29,10 +57,31 @@ android {
     }
 }
 
+android.applicationVariants.all { variant ->
+    def version = VERSION.clone()
+    if (System.hasProperty("BUILD_NUMBER")) {
+        version.build = System.getenv("BUILD_NUMBER").toInteger()
+    }
+
+    variant.outputs.each { output ->
+        output.versionCodeOverride = getVersionCode(version)
+        output.versionNameOverride = getVersionName(version)
+
+        if (variant.getBuildType().name == "release") {
+            // add the version number to all output files
+            def file = output.outputFile
+            output.outputFile = new File(
+                    file.parent,
+                    file.name.replace(".apk", "-" + output.versionNameOverride + ".apk")
+            )
+        }
+    }
+}
+
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
     compile 'com.android.support:appcompat-v7:21.0.3'
     compile 'com.android.support:support-v4:21.0.3'
     compile 'com.android.support:mediarouter-v7:21.0.3'
-    compile 'com.google.android.gms:play-services:6.5.+'
+    compile 'com.google.android.gms:play-services:6.5.87'
 }
