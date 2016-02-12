@@ -4,4 +4,6 @@
 .DS_Store
 /build
 *.iml
+release
 keystore.properties
+releasekey.jks

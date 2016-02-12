@@ -36,3 +36,12 @@ deploy:
 
 after_failure:
   - adb logcat -d
+
+env:
+  global:
+  - secure: Nxrw4qcAT3WiM+KLn7plVP69GQt0JOcgqMfhBsGfIat1+GvMXdFBgwJA+oa8G8UKPix2flrEChTjDodYBOnfJGxkqDymgV322zWEyv6ufBGvsozw0dyO+Vrxub+bc/yb2EI0HaehGL3HCL7Ine3/KXRO43ugfonbuzK1SsGhl9Q=
+  - secure: Jyznd6yL8u+K8YsxR2ar/+r/xE+oYhUF8JbBU7Z53DDJrTJkjm0lPpfaf/gYpPo3L3QMfv+RMJOJvWkuIr92UMsnI72N9K/Nh2bc3DGZmzIhvDJ8QuidFMi3GJy5vKWwRMDel2uJD6POxFwmsl5MuXriy94+xMjadAp5k1LqVNA=
+
+before_install:
+- openssl aes-256-cbc -K $encrypted_a46826f24119_key -iv $encrypted_a46826f24119_iv
+  -in releasekey.jks.enc -out releasekey.jks -d
