@@ -23,11 +23,11 @@ before_script:
   - adb shell input keyevent 82 &
 
 script:
-  - ./gradlew clean testDebugUnitTest connectedDebugAndroidTest
+  - ./gradlew clean testProductionDebugUnitTest connectedProductionDebugAndroidTest
 
 deploy:
   provider: script
-  script: ./gradlew clean assembleRelease
+  script: ./gradlew clean assembleProductionRelease
   skip_cleanup: true
   on:
     all_branches: true
