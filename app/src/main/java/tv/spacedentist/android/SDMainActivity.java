@@ -1,9 +1,9 @@
 package tv.spacedentist.android;
 
 import android.support.v4.view.MenuItemCompat;
-import android.support.v7.app.ActionBar;
-import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
+import android.support.v7.app.ActionBar;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.app.MediaRouteActionProvider;
 import android.support.v7.media.MediaRouter;
 import android.util.Log;
@@ -26,7 +26,7 @@ import java.io.IOException;
 
 import tv.spacedentist.android.view.SDTextView;
 
-public class SDMainActivity extends ActionBarActivity
+public class SDMainActivity extends AppCompatActivity
         implements GoogleApiClient.OnConnectionFailedListener,
         GoogleApiClient.ConnectionCallbacks,
         Cast.MessageReceivedCallback {
