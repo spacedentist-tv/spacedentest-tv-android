@@ -1,7 +1,9 @@
-package tv.spacedentist.android;
+package tv.spacedentist.android.view;
+
+import tv.spacedentist.android.R;
 
 /**
- * Created by coffey on 01/01/15.
+ * Some data about the buttons so we can hook up click listeners that send the key when clicked.
  */
 public enum SDButton {
     BUTTON_ONE(R.id.button_one, "1"),

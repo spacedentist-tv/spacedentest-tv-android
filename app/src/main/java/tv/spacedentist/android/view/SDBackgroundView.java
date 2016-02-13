@@ -6,7 +6,8 @@ import android.util.AttributeSet;
 import android.widget.ImageView;
 
 /**
- * Created by coffey on 05/01/15.
+ * Our own custom image scaling for the background image as Android doesn't support keeping aspect
+ * ratio and cropping to the top left out of the box.
  */
 public class SDBackgroundView extends ImageView {
 

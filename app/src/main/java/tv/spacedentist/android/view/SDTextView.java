@@ -7,7 +7,7 @@ import android.util.Log;
 import android.widget.TextView;
 
 /**
- * Created by coffey on 02/01/15.
+ * A custom text view so that we can set the font
  */
 public class SDTextView extends TextView {
     private static final String TAG = SDTextView.class.getSimpleName();

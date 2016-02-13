@@ -41,15 +41,15 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
             signingConfig signingConfigs.release
         }
+        debug {
+            applicationIdSuffix ".debug"
+        }
     }
     productFlavors {
-        alpha {
-            applicationId "tv.spacedentist.android.alpha"
+        stag {
+            applicationId "tv.spacedentist.android.stag"
         }
-        beta {
-            applicationId "tv.spacedentist.android.beta"
-        }
-        production {
+        prod {
         }
     }
 }
@@ -72,4 +72,6 @@ dependencies {
     compile 'com.android.support:support-v4:23.1.1'
     compile 'com.android.support:mediarouter-v7:23.1.1'
     compile 'com.google.android.gms:play-services:8.4.0'
+
+    compile 'com.google.guava:guava:18.0'
 }

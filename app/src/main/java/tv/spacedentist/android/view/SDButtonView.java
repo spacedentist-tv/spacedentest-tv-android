@@ -7,7 +7,7 @@ import android.util.Log;
 import android.widget.Button;
 
 /**
- * Created by coffey on 01/01/15.
+ * A custom Button so we can set the font
  */
 public class SDButtonView extends Button {
     private static final String TAG = SDButtonView.class.getSimpleName();

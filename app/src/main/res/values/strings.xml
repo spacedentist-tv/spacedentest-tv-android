@@ -7,8 +7,7 @@
     <string name="media_route_menu_title">Cast</string>
 
     <!-- application ids -->
-    <string name="application_id">E7EFD798</string>
-    <string name="application_namespace">urn:x-cast:tv.spacedentist.cast</string>
+    <string name="chomrecast_application_namespace">urn:x-cast:tv.spacedentist.cast</string>
 
     <!-- text for the two disconnected states -->
     <string name="no_chromecast_text">You need a Chromecast on your network to start Spacedentist.tv</string>

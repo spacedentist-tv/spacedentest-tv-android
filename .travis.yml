@@ -11,19 +11,21 @@ android:
 cache:
   directories:
   - "$HOME/.gradle"
+  - "$HOME/.ivy2"
+  - "$HOME/.m2"
 before_script:
 - echo no | android create avd --force -n test -t android-19 --abi armeabi-v7a
 - emulator -avd test -no-skin -no-audio -no-window &
 - android-wait-for-emulator
 - adb shell input keyevent 82 &
 script:
-- "./gradlew clean testProductionDebugUnitTest connectedProductionDebugAndroidTest assembleProductionRelease"
+- "./gradlew clean testProdDebugUnitTest connectedProdDebugAndroidTest assembleProdRelease"
 deploy:
   provider: releases
   skip_cleanup: true
   api_key:
     secure: KWBNMR7GfX0A5FxU9UPCku5oUjzz7SzfLgNwUcabN2OkOwFfLWwMHdT3fAVyIB0npRVANzGs6tQte5EUW1hv/vdmd0lCyn3pEsz6IVf8unMDlMMw5jnjoS1eR1km6YTDqzVf7Br4K8bFc+ACQNhslFrHAIPR0V3uRGYZXs4Vnw8=
-  file: app/build/outputs/apk/app-production-release-$TRAVIS_TAG.$TRAVIS_BUILD_NUMBER.apk
+  file: app/build/outputs/apk/app-prod-release-$TRAVIS_TAG.$TRAVIS_BUILD_NUMBER.apk
   on:
     repo: spacedentist-tv/spacedentist-tv-android
     all_branches: true

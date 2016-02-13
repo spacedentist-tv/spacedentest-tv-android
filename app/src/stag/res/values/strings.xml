@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="activity_name">stagdentist.tv</string>
+    <string name="app_name">Stagdentist</string>
+    <string name="chromecast_application_id">E7EFD798</string>
+</resources>
