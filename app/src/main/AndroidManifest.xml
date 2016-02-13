@@ -1,13 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     package="tv.spacedentist.android" >
 
     <application
         android:name=".SDApplication"
-        android:allowBackup="true"
-        android:icon="@drawable/ic_launcher_sdtv"
+        android:allowBackup="false"
+        android:icon="@mipmap/ic_launcher_sdtv"
         android:label="@string/app_name"
-        android:theme="@style/SDAppTheme" >
+        android:theme="@style/SDAppTheme"
+        tools:ignore="GoogleAppIndexingWarning">
         <activity
             android:name=".SDMainActivity"
             android:label="@string/activity_name" >

@@ -5,7 +5,6 @@ import android.os.Bundle;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.app.MediaRouteActionProvider;
-import android.support.v7.media.MediaRouter;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -16,7 +15,7 @@ import android.view.View;
 import tv.spacedentist.android.chromecast.SDChromecastManager;
 import tv.spacedentist.android.chromecast.SDChromecastManagerListener;
 import tv.spacedentist.android.view.SDButton;
-import tv.spacedentist.android.view.SDButtonListener;
+import tv.spacedentist.android.view.SDButtonClickSender;
 import tv.spacedentist.android.view.SDTextView;
 
 /**
@@ -49,10 +48,10 @@ public class SDMainActivity extends AppCompatActivity implements SDChromecastMan
             actionBar.setCustomView(titleView);
         }
 
-        final SDButtonListener sdButtonListener = new SDButtonListener(mChromecastManager);
+        final SDButtonClickSender buttonClickSender = new SDButtonClickSender(mChromecastManager);
 
         for (SDButton button : SDButton.values()) {
-            findViewById(button.getResId()).setOnClickListener(sdButtonListener);
+            findViewById(button.getResId()).setOnClickListener(buttonClickSender);
         }
     }
 

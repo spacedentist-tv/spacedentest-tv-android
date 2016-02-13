@@ -7,8 +7,8 @@ import org.json.JSONObject;
 
 import tv.spacedentist.android.chromecast.SDChromecastManager;
 
-public class SDButtonListener implements View.OnClickListener {
-    private static final String TAG = SDButtonListener.class.getSimpleName();
+public class SDButtonClickSender implements View.OnClickListener {
+    private static final String TAG = SDButtonClickSender.class.getSimpleName();
 
     private static final String SDTV_MSG_KEY = "sdtv_msg";
     private static final String SDTV_REMOTE_CONTROL_KEY = "rc";
@@ -16,7 +16,7 @@ public class SDButtonListener implements View.OnClickListener {
 
     private final SDChromecastManager mChromecastManager;
 
-    public SDButtonListener(SDChromecastManager chromecastManager) {
+    public SDButtonClickSender(SDChromecastManager chromecastManager) {
         mChromecastManager = chromecastManager;
     }
 

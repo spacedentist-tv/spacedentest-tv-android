@@ -24,5 +24,6 @@
     <string name="keypad_eight">8</string>
     <string name="keypad_nine">9</string>
     <string name="keypad_zero">0</string>
+    <string name="keypad_trufax_content_description">trufax</string>
 
 </resources>
