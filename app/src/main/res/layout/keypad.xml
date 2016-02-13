@@ -111,6 +111,7 @@
         android:layout_weight="1">
 
         <ImageButton
+            android:background="@android:color/transparent"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:src="@drawable/sd_text_button"
