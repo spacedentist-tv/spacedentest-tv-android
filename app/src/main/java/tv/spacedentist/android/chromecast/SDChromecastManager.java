@@ -139,7 +139,7 @@ public class SDChromecastManager implements
     private void connect(MediaRouter.RouteInfo routeInfo) {
         mSelectedDevice = CastDevice.getFromBundle(routeInfo.getExtras());
 
-        Cast.CastOptions.Builder apiOptionsBuilder = Cast.CastOptions.builder(mSelectedDevice, new Cast.Listener() {
+        Cast.CastOptions.Builder apiOptionsBuilder = new Cast.CastOptions.Builder(mSelectedDevice, new Cast.Listener() {
             @Override
             public void onApplicationStatusChanged() {
                 if (mApiClient != null) {
