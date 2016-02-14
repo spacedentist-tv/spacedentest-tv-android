@@ -1,5 +1,6 @@
 package tv.spacedentist.android;
 
+import android.support.annotation.IdRes;
 import android.support.v4.view.MenuItemCompat;
 import android.os.Bundle;
 import android.support.v7.app.ActionBar;
@@ -11,6 +12,8 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+
+import java.util.Locale;
 
 import tv.spacedentist.android.chromecast.SDChromecastManager;
 import tv.spacedentist.android.chromecast.SDChromecastManagerListener;
@@ -84,15 +87,24 @@ public class SDMainActivity extends AppCompatActivity implements SDChromecastMan
         super.onStop();
     }
 
+    private void setMenuItem(Menu menu, @IdRes int itemId, String title, boolean visible) {
+        MenuItem menuItem = menu.findItem(itemId);
+        menuItem.setTitle(title);
+        menuItem.setVisible(visible);
+    }
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        Log.d(TAG, "onCreateOptionsMenu");
-
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.menu_main, menu);
         MenuItem mediaRouteMenuItem = menu.findItem(R.id.media_route_menu_item);
         MediaRouteActionProvider mediaRouteActionProvider = (MediaRouteActionProvider) MenuItemCompat.getActionProvider(mediaRouteMenuItem);
         mChromecastManager.setMediaRouteActionProvider(mediaRouteActionProvider);
+
+        setMenuItem(menu, R.id.app_id, BuildConfig.APPLICATION_ID, BuildConfig.DEBUG);
+        setMenuItem(menu, R.id.app_flavor, BuildConfig.FLAVOR, BuildConfig.DEBUG);
+        setMenuItem(menu, R.id.app_build_type, BuildConfig.BUILD_TYPE, BuildConfig.DEBUG);
+        setMenuItem(menu, R.id.app_version, String.format(Locale.US, "%s (%d)", BuildConfig.VERSION_NAME, BuildConfig.VERSION_CODE), true);
 
         return true;
     }
@@ -104,23 +116,18 @@ public class SDMainActivity extends AppCompatActivity implements SDChromecastMan
     }
 
     private void setDisconnectedText() {
-        boolean routeAvailable = mChromecastManager.isRouteAvailable();
-
-        Log.d(TAG, String.format("setDisconnectedText: %b", routeAvailable));
-        ((SDTextView) findViewById(R.id.disconnected)).setText((routeAvailable) ?
+        ((SDTextView) findViewById(R.id.disconnected)).setText((mChromecastManager.isRouteAvailable()) ?
                 R.string.disconnected_text:
                 R.string.no_chromecast_text);
     }
 
     private void showCorrectView() {
         if (mChromecastManager.isConnecting()) {
-            // we are connecting
             findViewById(R.id.connecting_spinner).setVisibility(View.VISIBLE);
             findViewById(R.id.disconnected).setVisibility(View.GONE);
             findViewById(R.id.connected).setVisibility(View.GONE);
         } else {
             boolean connected = mChromecastManager.isConnected();
-
             findViewById(R.id.connecting_spinner).setVisibility(View.GONE);
             findViewById(R.id.disconnected).setVisibility(connected ? View.GONE : View.VISIBLE);
             findViewById(R.id.connected).setVisibility(connected ? View.VISIBLE : View.GONE);
