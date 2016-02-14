@@ -66,16 +66,8 @@ public class SDMainActivity extends AppCompatActivity implements SDChromecastMan
     public void onResume() {
         super.onResume();
         Log.d(TAG, "onResume()");
-        mChromecastManager.addMediaRouterCallback();
         showCorrectView();
         setDisconnectedText();
-    }
-
-    @Override
-    public void onPause() {
-        Log.d(TAG, "onPause()");
-        mChromecastManager.removeMediaRouterCallback();
-        super.onPause();
     }
 
     @Override
