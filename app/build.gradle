@@ -26,6 +26,7 @@ android {
         targetSdkVersion 23
         versionCode getVersionCode(VERSION, BUILD_NUMBER)
         versionName getVersionName(VERSION, BUILD_NUMBER)
+        buildConfigField "String", "CHROMECAST_APP_NAMESPACE", '"urn:x-cast:tv.spacedentist.cast"'
     }
     signingConfigs {
         release {
@@ -48,8 +49,10 @@ android {
     productFlavors {
         stag {
             applicationId "tv.spacedentist.android.stag"
+            buildConfigField "String", "CHROMECAST_APP_ID", '"E7EFD798"'
         }
         prod {
+            buildConfigField "String", "CHROMECAST_APP_ID", '"CBEF7615"'
         }
     }
 }
@@ -76,7 +79,5 @@ dependencies {
     compile 'com.google.guava:guava:18.0'
 
     testCompile 'junit:junit:4.12'
-    testCompile "org.robolectric:robolectric:3.0"
-    testCompile "org.robolectric:shadows-support-v4:3.0"
-    testCompile "org.robolectric:shadows-play-services:3.0"
+    testCompile 'org.mockito:mockito-core:1.10.19'
 }

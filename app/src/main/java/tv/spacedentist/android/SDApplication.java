@@ -1,8 +1,15 @@
 package tv.spacedentist.android;
 
 import android.app.Application;
+import android.content.Context;
+import android.support.v7.media.MediaRouteSelector;
+import android.support.v7.media.MediaRouter;
+
+import com.google.android.gms.cast.CastMediaControlIntent;
 
 import tv.spacedentist.android.chromecast.SDChromecastManager;
+import tv.spacedentist.android.chromecast.SDMediaRouteSelector;
+import tv.spacedentist.android.chromecast.SDMediaRouter;
 
 /**
  * We keep the global state alive here (Chromecast client connection) so that it doesn't get
@@ -17,7 +24,9 @@ public class SDApplication extends Application {
     public void onCreate() {
         super.onCreate();
 
-        mChromecastManager = new SDChromecastManager(getApplicationContext());
+        SDMediaRouter mediaRouter = new SDMediaRouter(getApplicationContext());
+        SDMediaRouteSelector mediaRouteSelector = new SDMediaRouteSelector();
+        mChromecastManager = new SDChromecastManager(mediaRouter, mediaRouteSelector);
     }
 
     public SDChromecastManager getChromecastManager() {

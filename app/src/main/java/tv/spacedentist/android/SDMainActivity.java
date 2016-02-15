@@ -1,5 +1,6 @@
 package tv.spacedentist.android;
 
+import android.support.v7.media.MediaRouter;
 import android.support.annotation.IdRes;
 import android.support.v4.view.MenuItemCompat;
 import android.os.Bundle;
@@ -17,6 +18,7 @@ import java.util.Locale;
 
 import tv.spacedentist.android.chromecast.SDChromecastManager;
 import tv.spacedentist.android.chromecast.SDChromecastManagerListener;
+import tv.spacedentist.android.chromecast.SDMediaRouterCallback;
 import tv.spacedentist.android.view.SDButton;
 import tv.spacedentist.android.view.SDButtonClickSender;
 import tv.spacedentist.android.view.SDTextView;
@@ -30,6 +32,7 @@ public class SDMainActivity extends AppCompatActivity implements SDChromecastMan
     private static final String TAG = SDMainActivity.class.getSimpleName();
 
     private SDChromecastManager mChromecastManager;
+    private MediaRouter.Callback mMediaRouterCallback;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,6 +43,8 @@ public class SDMainActivity extends AppCompatActivity implements SDChromecastMan
         mChromecastManager = ((SDApplication) getApplication()).getChromecastManager();
 
         mChromecastManager.addListener(this);
+
+        mMediaRouterCallback = new SDMediaRouterCallback(this, mChromecastManager);
 
         final ActionBar actionBar = getSupportActionBar();
         if (actionBar != null) {
@@ -77,13 +82,13 @@ public class SDMainActivity extends AppCompatActivity implements SDChromecastMan
     public void onStart() {
         super.onStart();
         Log.d(TAG, "onStart()");
-        mChromecastManager.addMediaRouterCallback();
+        mChromecastManager.addMediaRouterCallback(mMediaRouterCallback);
     }
 
     @Override
     public void onStop() {
         Log.d(TAG, "onStop");
-        mChromecastManager.removeMediaRouterCallback();
+        mChromecastManager.removeMediaRouterCallback(mMediaRouterCallback);
         super.onStop();
     }
 

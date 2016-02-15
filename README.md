@@ -5,8 +5,10 @@ The official Android Chromecast app for http://spacedentist.tv
 
 # Instructions
 
-It's an Android project. Use Android studio.
+It's an Android Gradle project. Probably use Android Studio. There are two flavors, prod and stag, that point to production and staging version of the receiver app respectively.
 
-Build on the command line with `./gradlew assembleProductionDebug`.
+Build on the command line with `./gradlew assembleProdDebug`.
 
-Run tests with `./gradlew testProductionDebugUnitTest connectedProductionDebugAndroidTest`
+Install on the command line with `./gradlew installProdDebug`.
+
+Run tests with `./gradlew lintProdRelease testProdReleaseUnitTest`. This is what will run as a validation on Travis if you create a pull request.
