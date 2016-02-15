@@ -1,4 +1,5 @@
 apply plugin: 'com.android.application'
+apply plugin: 'jacoco-android'
 
 def VERSION = System.getenv('TRAVIS_TAG') ?: '0.0.0'
 def BUILD_NUMBER = System.getenv('TRAVIS_BUILD_NUMBER') ?: '0'
