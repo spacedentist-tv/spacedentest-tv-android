@@ -5,36 +5,44 @@ import android.support.v7.media.MediaRouter;
 
 public class SDMediaRouterCallback extends MediaRouter.Callback {
 
-    Context mContext;
-    SDChromecastManager mChromecaseManager;
+    public interface Callback {
+        void onRouteSelected(Context context, MediaRouter router, MediaRouter.RouteInfo routeInfo);
+        void onRouteUnselected(MediaRouter router, MediaRouter.RouteInfo info);
+        void onRouteAdded(MediaRouter router, MediaRouter.RouteInfo route);
+        void onRouteRemoved(MediaRouter router, MediaRouter.RouteInfo route);
+        void onRouteChanged(MediaRouter router, MediaRouter.RouteInfo route);
+    }
 
-    public SDMediaRouterCallback(Context context, SDChromecastManager chromecastManager) {
+    private final Context mContext;
+    private final Callback mCallback;
+
+    public SDMediaRouterCallback(Context context, Callback callback) {
         mContext = context;
-        mChromecaseManager = chromecastManager;
+        mCallback = callback;
     }
 
     @Override
     public void onRouteSelected(MediaRouter router, MediaRouter.RouteInfo routeInfo) {
-        mChromecaseManager.connect(mContext, routeInfo);
+        mCallback.onRouteSelected(mContext, router, routeInfo);
     }
 
     @Override
     public void onRouteUnselected(MediaRouter router, MediaRouter.RouteInfo info) {
-        mChromecaseManager.tearDown();
+        mCallback.onRouteUnselected(router, info);
     }
 
     @Override
     public void onRouteAdded(MediaRouter router, MediaRouter.RouteInfo route) {
-        mChromecaseManager.broadcastConnectionStateChange();
+        mCallback.onRouteAdded(router, route);
     }
 
     @Override
     public void onRouteRemoved(MediaRouter router, MediaRouter.RouteInfo route) {
-        mChromecaseManager.broadcastConnectionStateChange();
+        mCallback.onRouteRemoved(router, route);
     }
 
     @Override
     public void onRouteChanged(MediaRouter router, MediaRouter.RouteInfo route) {
-        mChromecaseManager.broadcastConnectionStateChange();
+        mCallback.onRouteChanged(router, route);
     }
 }

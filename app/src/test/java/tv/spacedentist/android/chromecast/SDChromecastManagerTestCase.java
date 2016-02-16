@@ -1,7 +1,6 @@
 package tv.spacedentist.android.chromecast;
 
 import android.test.suitebuilder.annotation.SmallTest;
-import android.util.Log;
 
 import com.google.android.gms.cast.Cast;
 import com.google.android.gms.common.api.GoogleApiClient;
@@ -26,7 +25,6 @@ import static org.mockito.Mockito.when;
 
 public class SDChromecastManagerTestCase extends TestCase {
 
-    @Mock private GoogleApiClient mApiClient;
     @Mock private Cast.CastApi mCastApi;
     @Mock private SDLogger mLogger;
     @Mock private SDMediaRouter mMediaRouter;
@@ -56,12 +54,13 @@ public class SDChromecastManagerTestCase extends TestCase {
 
     @SmallTest
     public void testIsConnecting() {
+        GoogleApiClient apiClient = mock(GoogleApiClient.class);
         assertFalse(mChromecastManager.isConnecting());
-        mChromecastManager.setApiClient(mApiClient);
+        mChromecastManager.setApiClient(apiClient);
         assertFalse(mChromecastManager.isConnecting());
-        when(mApiClient.isConnecting()).thenReturn(true);
+        when(apiClient.isConnecting()).thenReturn(true);
         assertTrue(mChromecastManager.isConnecting());
-        when(mApiClient.isConnecting()).thenReturn(false);
+        when(apiClient.isConnecting()).thenReturn(false);
         assertFalse(mChromecastManager.isConnecting());
         mChromecastManager.setApiClient(null);
         assertFalse(mChromecastManager.isConnecting());
@@ -69,12 +68,13 @@ public class SDChromecastManagerTestCase extends TestCase {
 
     @SmallTest
     public void testIsConnected() {
+        GoogleApiClient apiClient = mock(GoogleApiClient.class);
         assertFalse(mChromecastManager.isConnected());
-        mChromecastManager.setApiClient(mApiClient);
+        mChromecastManager.setApiClient(apiClient);
         assertFalse(mChromecastManager.isConnected());
-        when(mApiClient.isConnected()).thenReturn(true);
+        when(apiClient.isConnected()).thenReturn(true);
         assertTrue(mChromecastManager.isConnected());
-        when(mApiClient.isConnected()).thenReturn(false);
+        when(apiClient.isConnected()).thenReturn(false);
         assertFalse(mChromecastManager.isConnected());
         mChromecastManager.setApiClient(null);
         assertFalse(mChromecastManager.isConnected());
@@ -87,9 +87,10 @@ public class SDChromecastManagerTestCase extends TestCase {
 
     @SmallTest
     public void testSendChromecastMessage() {
-        mChromecastManager.setApiClient(mApiClient);
+        GoogleApiClient apiClient = mock(GoogleApiClient.class);
+        mChromecastManager.setApiClient(apiClient);
         PendingResult<Status> pendingResult = mockPendingResult();
-        when(mCastApi.sendMessage(eq(mApiClient), any(String.class), any(String.class))).thenReturn(pendingResult);
+        when(mCastApi.sendMessage(eq(apiClient), any(String.class), any(String.class))).thenReturn(pendingResult);
         mChromecastManager.sendChromecastMessage("hello");
     }
 

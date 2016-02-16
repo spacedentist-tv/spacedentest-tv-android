@@ -1,5 +1,8 @@
 package tv.spacedentist.android.view;
 
+import android.support.annotation.IdRes;
+import android.support.annotation.LayoutRes;
+
 import tv.spacedentist.android.R;
 
 /**
@@ -21,12 +24,12 @@ public enum SDButton {
     private final int mResId;
     private final String mKey;
 
-    SDButton(int resId, String key) {
+    SDButton(@IdRes int resId, String key) {
         mResId = resId;
         mKey = key;
     }
 
-    public int getResId() {
+    public @IdRes int getResId() {
         return mResId;
     }
 
@@ -34,7 +37,7 @@ public enum SDButton {
         return mKey;
     }
 
-    public static SDButton fromResId(int resId) {
+    public static SDButton fromResId(@IdRes int resId) {
         for (SDButton button : SDButton.values()) {
             if (button.getResId() == resId) {
                 return button;

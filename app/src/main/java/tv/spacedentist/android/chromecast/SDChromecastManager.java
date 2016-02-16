@@ -25,6 +25,8 @@ import tv.spacedentist.android.util.SDLogger;
  * This is where most of the Chormecast logic happens
  */
 public class SDChromecastManager implements
+        SDMediaRouterCallback.Callback,
+        SDCastListener.Callback,
         GoogleApiClient.ConnectionCallbacks,
         GoogleApiClient.OnConnectionFailedListener,
         Cast.MessageReceivedCallback {
@@ -38,10 +40,9 @@ public class SDChromecastManager implements
     // These are not static final so that tests can inject mocked versions
     private Cast.CastApi CAST_API = Cast.CastApi;
     private SDLogger mLogger = new SDLogger();
-
     private GoogleApiClient mApiClient;
-    private CastDevice mSelectedDevice;
 
+    private CastDevice mSelectedDevice;
     private String mSessionId;
     private String mStatus;
 
@@ -70,33 +71,28 @@ public class SDChromecastManager implements
         mediaRouteActionProvider.setRouteSelector(mMediaRouteSelector.get());
     }
 
+    private ResultCallback<Cast.ApplicationConnectionResult> LAUNCH_APPLICATION_CALLBACK = new ResultCallback<Cast.ApplicationConnectionResult>() {
+        @Override
+        public void onResult(@NonNull Cast.ApplicationConnectionResult result) {
+            Status status = result.getStatus();
+            mLogger.d(TAG, "launch application result: " + status);
+
+            if (status.isSuccess()) {
+                mSessionId = result.getSessionId();
+                mStatus = result.getApplicationStatus();
+                mLogger.d(TAG, String.format("launch success %s %s", mSessionId, mStatus));
+                broadcastConnectionStateChange();
+                connectChannel();
+            } else {
+                mLogger.d(TAG, "launch failed");
+                tearDown();
+            }
+        }
+    };
+
     public void launch() {
         try {
-            CAST_API.launchApplication(mApiClient, BuildConfig.CHROMECAST_APP_ID, new LaunchOptions())
-                    .setResultCallback(
-                            new ResultCallback<Cast.ApplicationConnectionResult>() {
-                                @Override
-                                public void onResult(Cast.ApplicationConnectionResult result) {
-                                    Status status = result.getStatus();
-
-                                    mLogger.d(TAG, "launch application result: " + status);
-
-                                    if (status.isSuccess()) {
-                                        mSessionId = result.getSessionId();
-                                        mStatus = result.getApplicationStatus();
-
-                                        mLogger.d(TAG, String.format("launch success %s %s", mSessionId, mStatus));
-
-                                        broadcastConnectionStateChange();
-                                        connectChannel();
-                                    } else {
-                                        mLogger.d(TAG, "launch failed");
-                                        tearDown();
-                                    }
-                                }
-                            }
-                    );
-
+            CAST_API.launchApplication(mApiClient, BuildConfig.CHROMECAST_APP_ID, new LaunchOptions()).setResultCallback(LAUNCH_APPLICATION_CALLBACK);
         } catch (Exception e) {
             mLogger.e(TAG, "Failed to launch application", e);
         }
@@ -105,29 +101,7 @@ public class SDChromecastManager implements
     protected void connect(Context context, MediaRouter.RouteInfo routeInfo) {
         mSelectedDevice = CastDevice.getFromBundle(routeInfo.getExtras());
 
-        Cast.CastOptions.Builder apiOptionsBuilder = new Cast.CastOptions.Builder(mSelectedDevice, new Cast.Listener() {
-            @Override
-            public void onApplicationStatusChanged() {
-                if (mApiClient != null) {
-                    mStatus = CAST_API.getApplicationStatus(mApiClient);
-                    mLogger.d(TAG, "onApplicationStatusChanged: " + mStatus);
-
-                    broadcastConnectionStateChange();
-                }
-            }
-
-            @Override
-            public void onVolumeChanged() {
-                if (mApiClient != null) {
-                    mLogger.d(TAG, "onVolumeChanged: " + CAST_API.getVolume(mApiClient));
-                }
-            }
-
-            @Override
-            public void onApplicationDisconnected(int errorCode) {
-                tearDown();
-            }
-        });
+        Cast.CastOptions.Builder apiOptionsBuilder = new Cast.CastOptions.Builder(mSelectedDevice, new SDCastListener(this));
 
         mApiClient = new GoogleApiClient.Builder(context)
                 .addApi(Cast.API, apiOptionsBuilder.build())
@@ -137,6 +111,28 @@ public class SDChromecastManager implements
 
         mApiClient.connect();
         broadcastConnectionStateChange();
+    }
+
+    @Override
+    public void onApplicationStatusChanged() {
+        if (mApiClient != null) {
+            mStatus = CAST_API.getApplicationStatus(mApiClient);
+            mLogger.d(TAG, "onApplicationStatusChanged: " + mStatus);
+
+            broadcastConnectionStateChange();
+        }
+    }
+
+    @Override
+    public void onVolumeChanged() {
+        if (mApiClient != null) {
+            mLogger.d(TAG, "onVolumeChanged: " + CAST_API.getVolume(mApiClient));
+        }
+    }
+
+    @Override
+    public void onApplicationDisconnected(int errorCode) {
+        tearDown();
     }
 
     protected void setApiClient(GoogleApiClient apiClient) {
@@ -165,9 +161,7 @@ public class SDChromecastManager implements
 
     private void connectChannel() {
         try {
-            CAST_API.setMessageReceivedCallbacks(mApiClient,
-                    BuildConfig.CHROMECAST_APP_NAMESPACE,
-                    this);
+            CAST_API.setMessageReceivedCallbacks(mApiClient, BuildConfig.CHROMECAST_APP_NAMESPACE, this);
         } catch (IOException e) {
             mLogger.e(TAG, "Exception while creating channel", e);
         }
@@ -186,8 +180,7 @@ public class SDChromecastManager implements
     }
 
     @Override
-    public void onMessageReceived(CastDevice castDevice, String namespace,
-                                  String message) {
+    public void onMessageReceived(CastDevice castDevice, String namespace, String message) {
         mLogger.d(TAG, "onMessageReceived: " + message);
     }
 
@@ -231,17 +224,42 @@ public class SDChromecastManager implements
         return mMediaRouter.isRouteAvailable(mMediaRouteSelector, MediaRouter.AVAILABILITY_FLAG_IGNORE_DEFAULT_ROUTE);
     }
 
+    private ResultCallback<Status> SEND_MESSAGE_CALLBACK = new ResultCallback<Status>() {
+        @Override
+        public void onResult(@NonNull Status result) {
+            if (!result.isSuccess()) {
+                mLogger.e(TAG, "Sending message failed");
+            }
+        }
+    };
+
     public void sendChromecastMessage(String message) {
         CAST_API.sendMessage(mApiClient, BuildConfig.CHROMECAST_APP_NAMESPACE, message)
-                .setResultCallback(
-                        new ResultCallback<Status>() {
-                            @Override
-                            public void onResult(@NonNull Status result) {
-                                if (!result.isSuccess()) {
-                                    mLogger.e(TAG, "Sending message failed");
-                                }
-                            }
-                        });
+                .setResultCallback(SEND_MESSAGE_CALLBACK);
     }
 
+    @Override
+    public void onRouteSelected(Context context, MediaRouter router, MediaRouter.RouteInfo routeInfo) {
+        connect(context, routeInfo);
+    }
+
+    @Override
+    public void onRouteUnselected(MediaRouter router, MediaRouter.RouteInfo info) {
+        tearDown();
+    }
+
+    @Override
+    public void onRouteAdded(MediaRouter router, MediaRouter.RouteInfo route) {
+        broadcastConnectionStateChange();
+    }
+
+    @Override
+    public void onRouteRemoved(MediaRouter router, MediaRouter.RouteInfo route) {
+        broadcastConnectionStateChange();
+    }
+
+    @Override
+    public void onRouteChanged(MediaRouter router, MediaRouter.RouteInfo route) {
+        broadcastConnectionStateChange();
+    }
 }

@@ -1,11 +1,6 @@
 package tv.spacedentist.android;
 
 import android.app.Application;
-import android.content.Context;
-import android.support.v7.media.MediaRouteSelector;
-import android.support.v7.media.MediaRouter;
-
-import com.google.android.gms.cast.CastMediaControlIntent;
 
 import tv.spacedentist.android.chromecast.SDChromecastManager;
 import tv.spacedentist.android.chromecast.SDMediaRouteSelector;
