@@ -1,6 +1,5 @@
 package tv.spacedentist.android.chromecast;
 
-import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.app.MediaRouteActionProvider;
@@ -36,6 +35,7 @@ public class SDChromecastManager implements
 
     private final SDMediaRouter mMediaRouter;
     private final SDMediaRouteSelector mMediaRouteSelector;
+    private final SDApiClientCreator mApiClientCreator;
 
     // These are not static final so that tests can inject mocked versions
     private Cast.CastApi CAST_API = Cast.CastApi;
@@ -48,7 +48,10 @@ public class SDChromecastManager implements
 
     private boolean mWaitingForReconnect = false;
 
-    public SDChromecastManager(SDMediaRouter mediaRouter, SDMediaRouteSelector mediaRouteSelector) {
+    public SDChromecastManager(SDMediaRouter mediaRouter,
+                               SDMediaRouteSelector mediaRouteSelector,
+                               SDApiClientCreator apiClientCreator) {
+        mApiClientCreator = apiClientCreator;
         mMediaRouter = mediaRouter;
         mMediaRouteSelector = mediaRouteSelector;
     }
@@ -98,17 +101,10 @@ public class SDChromecastManager implements
         }
     }
 
-    protected void connect(Context context, MediaRouter.RouteInfo routeInfo) {
+    protected void connect(MediaRouter.RouteInfo routeInfo) {
         mSelectedDevice = CastDevice.getFromBundle(routeInfo.getExtras());
-
-        Cast.CastOptions.Builder apiOptionsBuilder = new Cast.CastOptions.Builder(mSelectedDevice, new SDCastListener(this));
-
-        mApiClient = new GoogleApiClient.Builder(context)
-                .addApi(Cast.API, apiOptionsBuilder.build())
-                .addConnectionCallbacks(this)
-                .addOnConnectionFailedListener(this)
-                .build();
-
+        Cast.CastOptions apiOptionsBuilder = new Cast.CastOptions.Builder(mSelectedDevice, new SDCastListener(this)).build();
+        mApiClient = mApiClientCreator.get(apiOptionsBuilder, this, this);
         mApiClient.connect();
         broadcastConnectionStateChange();
     }
@@ -239,8 +235,8 @@ public class SDChromecastManager implements
     }
 
     @Override
-    public void onRouteSelected(Context context, MediaRouter router, MediaRouter.RouteInfo routeInfo) {
-        connect(context, routeInfo);
+    public void onRouteSelected(MediaRouter router, MediaRouter.RouteInfo routeInfo) {
+        connect(routeInfo);
     }
 
     @Override

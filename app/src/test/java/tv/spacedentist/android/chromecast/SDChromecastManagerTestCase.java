@@ -39,17 +39,64 @@ public class SDChromecastManagerTestCase extends TestCase {
     }
 
     @SmallTest
-    public void testBroadcastConnectionStateChange() {
-        SDChromecastManagerListener mockListener = mock(SDChromecastManagerListener.class);
-        mChromecastManager.addListener(mockListener);
-        verify(mockListener, times(0)).onConnectionStateChanged();
+    public void testAddListener() {
+        SDChromecastManagerListener listener = mock(SDChromecastManagerListener.class);
+        mChromecastManager.addListener(listener);
+        verify(listener, times(0)).onConnectionStateChanged();
         mChromecastManager.broadcastConnectionStateChange();
-        verify(mockListener, times(1)).onConnectionStateChanged();
+        verify(listener, times(1)).onConnectionStateChanged();
+    }
+
+    @SmallTest
+    public void testAddSameListenerTwice() {
+        SDChromecastManagerListener listener = mock(SDChromecastManagerListener.class);
+        mChromecastManager.addListener(listener);
+        mChromecastManager.addListener(listener);
+        verify(listener, times(0)).onConnectionStateChanged();
         mChromecastManager.broadcastConnectionStateChange();
-        verify(mockListener, times(2)).onConnectionStateChanged();
-        mChromecastManager.removeListener(mockListener);
+        verify(listener, times(1)).onConnectionStateChanged();
+    }
+
+    @SmallTest
+    public void testAddTwoListeners() {
+        SDChromecastManagerListener listener1 = mock(SDChromecastManagerListener.class);
+        SDChromecastManagerListener listener2 = mock(SDChromecastManagerListener.class);
+        mChromecastManager.addListener(listener1);
+        mChromecastManager.addListener(listener2);
+        verify(listener1, times(0)).onConnectionStateChanged();
+        verify(listener2, times(0)).onConnectionStateChanged();
         mChromecastManager.broadcastConnectionStateChange();
-        verify(mockListener, times(2)).onConnectionStateChanged();
+        verify(listener1, times(1)).onConnectionStateChanged();
+        verify(listener2, times(1)).onConnectionStateChanged();
+    }
+
+    @SmallTest
+    public void testRemoveListener() {
+        SDChromecastManagerListener listener = mock(SDChromecastManagerListener.class);
+        mChromecastManager.addListener(listener);
+        mChromecastManager.removeListener(listener);
+        mChromecastManager.broadcastConnectionStateChange();
+        verify(listener, times(0)).onConnectionStateChanged();
+    }
+
+    @SmallTest
+    public void testRemoveTwoListeners() {
+        SDChromecastManagerListener listener1 = mock(SDChromecastManagerListener.class);
+        SDChromecastManagerListener listener2 = mock(SDChromecastManagerListener.class);
+        mChromecastManager.addListener(listener1);
+        mChromecastManager.addListener(listener2);
+        mChromecastManager.removeListener(listener1);
+        mChromecastManager.broadcastConnectionStateChange();
+        verify(listener1, times(0)).onConnectionStateChanged();
+        verify(listener2, times(1)).onConnectionStateChanged();
+    }
+
+    @SmallTest
+    public void testRemoveUnaddedListener() {
+        SDChromecastManagerListener listener = mock(SDChromecastManagerListener.class);
+        mChromecastManager.removeListener(listener);
+        mChromecastManager.broadcastConnectionStateChange();
+        verify(listener, times(0)).onConnectionStateChanged();
     }
 
     @SmallTest

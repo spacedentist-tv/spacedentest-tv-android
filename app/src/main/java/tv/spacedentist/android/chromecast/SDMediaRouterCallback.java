@@ -6,24 +6,22 @@ import android.support.v7.media.MediaRouter;
 public class SDMediaRouterCallback extends MediaRouter.Callback {
 
     public interface Callback {
-        void onRouteSelected(Context context, MediaRouter router, MediaRouter.RouteInfo routeInfo);
+        void onRouteSelected(MediaRouter router, MediaRouter.RouteInfo routeInfo);
         void onRouteUnselected(MediaRouter router, MediaRouter.RouteInfo info);
         void onRouteAdded(MediaRouter router, MediaRouter.RouteInfo route);
         void onRouteRemoved(MediaRouter router, MediaRouter.RouteInfo route);
         void onRouteChanged(MediaRouter router, MediaRouter.RouteInfo route);
     }
 
-    private final Context mContext;
     private final Callback mCallback;
 
     public SDMediaRouterCallback(Context context, Callback callback) {
-        mContext = context;
         mCallback = callback;
     }
 
     @Override
     public void onRouteSelected(MediaRouter router, MediaRouter.RouteInfo routeInfo) {
-        mCallback.onRouteSelected(mContext, router, routeInfo);
+        mCallback.onRouteSelected(router, routeInfo);
     }
 
     @Override
