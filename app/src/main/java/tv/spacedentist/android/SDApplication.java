@@ -10,8 +10,6 @@ import dagger.ObjectGraph;
  * destroyed and that we don't have to deal with lifecycle events in the activity.
  */
 public class SDApplication extends Application implements MembersInjector {
-    public static final String TAG = SDApplication.class.getSimpleName();
-
     private ObjectGraph mObjectGraph;
 
     @Override

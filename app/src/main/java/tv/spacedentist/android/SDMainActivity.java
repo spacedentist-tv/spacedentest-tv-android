@@ -34,7 +34,7 @@ public class SDMainActivity extends AppCompatActivity implements SDChromecastMan
     private static final String TAG = SDMainActivity.class.getSimpleName();
 
     @Inject SDChromecastManager mChromecastManager;
-    MediaRouter.Callback mMediaRouterCallback;
+    private MediaRouter.Callback mMediaRouterCallback;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

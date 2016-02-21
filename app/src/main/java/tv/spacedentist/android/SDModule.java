@@ -30,16 +30,10 @@ public class SDModule {
 
     private SDApplication mApplication;
 
-    /** No-args constructor need to override in SDTestModule */
+    /** No-args constructor needed to override in SDTestModule */
     public SDModule() {}
     public SDModule(SDApplication application) {
         mApplication = application;
-    }
-
-    @Provides
-    @Singleton
-    Context provideContext() {
-        return mApplication.getApplicationContext();
     }
 
     @Provides
