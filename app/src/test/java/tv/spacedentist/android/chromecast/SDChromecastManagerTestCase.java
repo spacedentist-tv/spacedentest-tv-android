@@ -26,9 +26,8 @@ import static org.mockito.Mockito.when;
 public class SDChromecastManagerTestCase extends TestCase implements MembersInjector {
 
     @Inject Cast.CastApi mCastApi;
-    SDChromecastManager mChromecastManager;
-
     private ObjectGraph mObjectGraph;
+    private SDChromecastManager mChromecastManager;
 
     @Override
     public void injectMembers(Object instance) {
@@ -40,7 +39,6 @@ public class SDChromecastManagerTestCase extends TestCase implements MembersInje
         super.setUp();
 
         mObjectGraph = ObjectGraph.create(SDTestModule.class);
-
         this.injectMembers(this);
         mChromecastManager = new SDChromecastManager(this);
     }
