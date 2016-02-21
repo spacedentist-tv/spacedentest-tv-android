@@ -17,6 +17,9 @@ import com.google.common.collect.Sets;
 import java.io.IOException;
 import java.util.Set;
 
+import javax.inject.Inject;
+
+import dagger.MembersInjector;
 import tv.spacedentist.android.BuildConfig;
 import tv.spacedentist.android.util.SDLogger;
 
@@ -33,9 +36,9 @@ public class SDChromecastManager implements
     private static final String TAG = SDChromecastManager.class.getSimpleName();
     private static final Set<SDChromecastManagerListener> mListeners = Sets.newHashSet();
 
-    private final SDMediaRouter mMediaRouter;
-    private final SDMediaRouteSelector mMediaRouteSelector;
-    private final SDApiClientCreator mApiClientCreator;
+    @Inject SDMediaRouter mMediaRouter;
+    @Inject SDMediaRouteSelector mMediaRouteSelector;
+    @Inject SDApiClientCreator mApiClientCreator;
 
     // These are not static final so that tests can inject mocked versions
     private Cast.CastApi CAST_API = Cast.CastApi;
@@ -48,12 +51,8 @@ public class SDChromecastManager implements
 
     private boolean mWaitingForReconnect = false;
 
-    public SDChromecastManager(SDMediaRouter mediaRouter,
-                               SDMediaRouteSelector mediaRouteSelector,
-                               SDApiClientCreator apiClientCreator) {
-        mApiClientCreator = apiClientCreator;
-        mMediaRouter = mediaRouter;
-        mMediaRouteSelector = mediaRouteSelector;
+    public SDChromecastManager(MembersInjector<SDChromecastManager> injector) {
+        injector.injectMembers(this);
     }
 
     public void addListener(SDChromecastManagerListener listener) {

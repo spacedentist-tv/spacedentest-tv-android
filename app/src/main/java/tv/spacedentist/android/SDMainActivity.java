@@ -16,6 +16,8 @@ import android.view.View;
 
 import java.util.Locale;
 
+import javax.inject.Inject;
+
 import tv.spacedentist.android.chromecast.SDChromecastManager;
 import tv.spacedentist.android.chromecast.SDChromecastManagerListener;
 import tv.spacedentist.android.chromecast.SDMediaRouterCallback;
@@ -31,8 +33,8 @@ public class SDMainActivity extends AppCompatActivity implements SDChromecastMan
 
     private static final String TAG = SDMainActivity.class.getSimpleName();
 
-    private SDChromecastManager mChromecastManager;
-    private MediaRouter.Callback mMediaRouterCallback;
+    @Inject SDChromecastManager mChromecastManager;
+    MediaRouter.Callback mMediaRouterCallback;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,11 +42,11 @@ public class SDMainActivity extends AppCompatActivity implements SDChromecastMan
 
         setContentView(R.layout.activity_main);
 
-        mChromecastManager = ((SDApplication) getApplication()).getChromecastManager();
+        ((SDApplication) getApplication()).injectMembers(this);
+
+        mMediaRouterCallback = new SDMediaRouterCallback(mChromecastManager);
 
         mChromecastManager.addListener(this);
-
-        mMediaRouterCallback = new SDMediaRouterCallback(this, mChromecastManager);
 
         final ActionBar actionBar = getSupportActionBar();
         if (actionBar != null) {

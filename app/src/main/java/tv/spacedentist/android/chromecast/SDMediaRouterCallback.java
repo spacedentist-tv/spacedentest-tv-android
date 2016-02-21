@@ -15,7 +15,7 @@ public class SDMediaRouterCallback extends MediaRouter.Callback {
 
     private final Callback mCallback;
 
-    public SDMediaRouterCallback(Context context, Callback callback) {
+    public SDMediaRouterCallback(Callback callback) {
         mCallback = callback;
     }
 
