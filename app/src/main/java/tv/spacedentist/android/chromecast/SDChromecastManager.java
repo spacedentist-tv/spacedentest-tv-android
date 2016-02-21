@@ -39,10 +39,9 @@ public class SDChromecastManager implements
     @Inject SDMediaRouter mMediaRouter;
     @Inject SDMediaRouteSelector mMediaRouteSelector;
     @Inject SDApiClientCreator mApiClientCreator;
+    @Inject SDLogger mLogger;
+    @Inject Cast.CastApi CAST_API;
 
-    // These are not static final so that tests can inject mocked versions
-    private Cast.CastApi CAST_API = Cast.CastApi;
-    private SDLogger mLogger = new SDLogger();
     private GoogleApiClient mApiClient;
 
     private CastDevice mSelectedDevice;

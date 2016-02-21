@@ -10,11 +10,11 @@ import com.google.android.gms.common.api.Status;
 
 import junit.framework.TestCase;
 
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import javax.inject.Inject;
 
-import tv.spacedentist.android.util.SDLogger;
+import dagger.MembersInjector;
+import dagger.ObjectGraph;
+import tv.spacedentist.android.SDTestModule;
 
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.eq;
@@ -23,19 +23,26 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-public class SDChromecastManagerTestCase extends TestCase {
+public class SDChromecastManagerTestCase extends TestCase implements MembersInjector {
 
-    @Mock private Cast.CastApi mCastApi;
-    @Mock private SDLogger mLogger;
-    @Mock private SDMediaRouter mMediaRouter;
-    @Mock private SDMediaRouteSelector mMediaRouteSelector;
-    @InjectMocks private SDChromecastManager mChromecastManager;
+    @Inject Cast.CastApi mCastApi;
+    SDChromecastManager mChromecastManager;
+
+    private ObjectGraph mObjectGraph;
+
+    @Override
+    public void injectMembers(Object instance) {
+        mObjectGraph.inject(instance);
+    }
 
     @Override
     protected void setUp() throws Exception {
         super.setUp();
 
-        MockitoAnnotations.initMocks(this);
+        mObjectGraph = ObjectGraph.create(SDTestModule.class);
+
+        this.injectMembers(this);
+        mChromecastManager = new SDChromecastManager(this);
     }
 
     @SmallTest

@@ -13,6 +13,7 @@ import tv.spacedentist.android.chromecast.SDApiClientCreator;
 import tv.spacedentist.android.chromecast.SDChromecastManager;
 import tv.spacedentist.android.chromecast.SDMediaRouteSelector;
 import tv.spacedentist.android.chromecast.SDMediaRouter;
+import tv.spacedentist.android.util.SDLogger;
 
 @Module(
         injects = {
@@ -21,13 +22,16 @@ import tv.spacedentist.android.chromecast.SDMediaRouter;
                 SDMediaRouter.class,
                 SDMediaRouteSelector.class,
                 SDApiClientCreator.class,
-                SDChromecastManager.class
+                SDChromecastManager.class,
+                com.google.android.gms.cast.Cast.CastApi.class
         }
 )
 public class SDModule {
 
-    private final SDApplication mApplication;
+    private SDApplication mApplication;
 
+    /** No-args constructor need to override in SDTestModule */
+    public SDModule() {}
     public SDModule(SDApplication application) {
         mApplication = application;
     }
@@ -39,6 +43,12 @@ public class SDModule {
     }
 
     @Provides
+    @Singleton
+    SDLogger provideLogger() {
+        return new SDLogger();
+    }
+
+    @Provides
     SDMediaRouter provideMediaRouter() {
         return new SDMediaRouter(mApplication);
     }
@@ -46,6 +56,11 @@ public class SDModule {
     @Provides
     SDMediaRouteSelector provideMediaRouteSelector() {
         return new SDMediaRouteSelector();
+    }
+
+    @Provides
+    Cast.CastApi provideCastApi() {
+        return Cast.CastApi;
     }
 
     @Provides
