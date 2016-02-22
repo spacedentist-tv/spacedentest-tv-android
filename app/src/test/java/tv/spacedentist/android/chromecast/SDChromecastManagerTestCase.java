@@ -19,6 +19,7 @@ import tv.spacedentist.android.SDTestModule;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -47,7 +48,7 @@ public class SDChromecastManagerTestCase extends TestCase implements MembersInje
     public void testAddListener() {
         SDChromecastManagerListener listener = mock(SDChromecastManagerListener.class);
         mChromecastManager.addListener(listener);
-        verify(listener, times(0)).onConnectionStateChanged();
+        verify(listener, never()).onConnectionStateChanged();
         mChromecastManager.broadcastConnectionStateChange();
         verify(listener, times(1)).onConnectionStateChanged();
     }
@@ -57,7 +58,7 @@ public class SDChromecastManagerTestCase extends TestCase implements MembersInje
         SDChromecastManagerListener listener = mock(SDChromecastManagerListener.class);
         mChromecastManager.addListener(listener);
         mChromecastManager.addListener(listener);
-        verify(listener, times(0)).onConnectionStateChanged();
+        verify(listener, never()).onConnectionStateChanged();
         mChromecastManager.broadcastConnectionStateChange();
         verify(listener, times(1)).onConnectionStateChanged();
     }
@@ -68,8 +69,8 @@ public class SDChromecastManagerTestCase extends TestCase implements MembersInje
         SDChromecastManagerListener listener2 = mock(SDChromecastManagerListener.class);
         mChromecastManager.addListener(listener1);
         mChromecastManager.addListener(listener2);
-        verify(listener1, times(0)).onConnectionStateChanged();
-        verify(listener2, times(0)).onConnectionStateChanged();
+        verify(listener1, never()).onConnectionStateChanged();
+        verify(listener2, never()).onConnectionStateChanged();
         mChromecastManager.broadcastConnectionStateChange();
         verify(listener1, times(1)).onConnectionStateChanged();
         verify(listener2, times(1)).onConnectionStateChanged();
@@ -81,7 +82,7 @@ public class SDChromecastManagerTestCase extends TestCase implements MembersInje
         mChromecastManager.addListener(listener);
         mChromecastManager.removeListener(listener);
         mChromecastManager.broadcastConnectionStateChange();
-        verify(listener, times(0)).onConnectionStateChanged();
+        verify(listener, never()).onConnectionStateChanged();
     }
 
     @SmallTest
@@ -92,7 +93,7 @@ public class SDChromecastManagerTestCase extends TestCase implements MembersInje
         mChromecastManager.addListener(listener2);
         mChromecastManager.removeListener(listener1);
         mChromecastManager.broadcastConnectionStateChange();
-        verify(listener1, times(0)).onConnectionStateChanged();
+        verify(listener1, never()).onConnectionStateChanged();
         verify(listener2, times(1)).onConnectionStateChanged();
     }
 
@@ -101,7 +102,7 @@ public class SDChromecastManagerTestCase extends TestCase implements MembersInje
         SDChromecastManagerListener listener = mock(SDChromecastManagerListener.class);
         mChromecastManager.removeListener(listener);
         mChromecastManager.broadcastConnectionStateChange();
-        verify(listener, times(0)).onConnectionStateChanged();
+        verify(listener, never()).onConnectionStateChanged();
     }
 
     @SmallTest

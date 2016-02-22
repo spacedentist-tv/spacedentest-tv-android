@@ -53,6 +53,7 @@ public class SDModule {
     }
 
     @Provides
+    @Singleton
     Cast.CastApi provideCastApi() {
         return Cast.CastApi;
     }
