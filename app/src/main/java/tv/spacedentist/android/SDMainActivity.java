@@ -1,18 +1,21 @@
 package tv.spacedentist.android;
 
-import android.support.v7.media.MediaRouter;
+import android.os.Bundle;
 import android.support.annotation.IdRes;
 import android.support.v4.view.MenuItemCompat;
-import android.os.Bundle;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.app.MediaRouteActionProvider;
+import android.support.v7.media.MediaRouter;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.TextView;
+
+import com.google.common.base.Optional;
 
 import java.util.Locale;
 
@@ -21,9 +24,9 @@ import javax.inject.Inject;
 import tv.spacedentist.android.chromecast.SDChromecastManager;
 import tv.spacedentist.android.chromecast.SDChromecastManagerListener;
 import tv.spacedentist.android.chromecast.SDMediaRouterCallback;
+import tv.spacedentist.android.util.SDLogger;
 import tv.spacedentist.android.view.SDButton;
 import tv.spacedentist.android.view.SDButtonClickSender;
-import tv.spacedentist.android.view.SDTextView;
 
 /**
  * The activity class that does everything. Luckily there's not that much to do, but would be nice
@@ -34,6 +37,7 @@ public class SDMainActivity extends AppCompatActivity implements SDChromecastMan
     private static final String TAG = SDMainActivity.class.getSimpleName();
 
     @Inject SDChromecastManager mChromecastManager;
+    @Inject SDLogger mLogger;
     private MediaRouter.Callback mMediaRouterCallback;
 
     @Override
@@ -61,7 +65,10 @@ public class SDMainActivity extends AppCompatActivity implements SDChromecastMan
         final SDButtonClickSender buttonClickSender = new SDButtonClickSender(mChromecastManager);
 
         for (SDButton button : SDButton.values()) {
-            findViewById(button.getResId()).setOnClickListener(buttonClickSender);
+            final Optional<View> buttonView = findOptionalViewById(button.getResId());
+            if (buttonView.isPresent()) {
+                buttonView.get().setOnClickListener(buttonClickSender);
+            }
         }
     }
 
@@ -123,21 +130,57 @@ public class SDMainActivity extends AppCompatActivity implements SDChromecastMan
     }
 
     private void setDisconnectedText() {
-        ((SDTextView) findViewById(R.id.disconnected)).setText((mChromecastManager.isRouteAvailable()) ?
-                R.string.disconnected_text:
-                R.string.no_chromecast_text);
+        final Optional<TextView> disconnectedView = findOptionalViewById(R.id.disconnected);
+
+        if (disconnectedView.isPresent()) {
+            disconnectedView.get()
+                    .setText((mChromecastManager.isRouteAvailable()) ?
+                            R.string.disconnected_text:
+                            R.string.no_chromecast_text);
+        }
     }
 
     private void showCorrectView() {
-        if (mChromecastManager.isConnecting()) {
-            findViewById(R.id.connecting_spinner).setVisibility(View.VISIBLE);
-            findViewById(R.id.disconnected).setVisibility(View.GONE);
-            findViewById(R.id.connected).setVisibility(View.GONE);
-        } else {
-            boolean connected = mChromecastManager.isConnected();
-            findViewById(R.id.connecting_spinner).setVisibility(View.GONE);
-            findViewById(R.id.disconnected).setVisibility(connected ? View.GONE : View.VISIBLE);
-            findViewById(R.id.connected).setVisibility(connected ? View.VISIBLE : View.GONE);
+        final Optional<View> connectingSpinnerView = findOptionalViewById(R.id.connecting_spinner);
+        final Optional<View> disconnectedView = findOptionalViewById(R.id.disconnected);
+        final Optional<View> connectedView = findOptionalViewById(R.id.connected);
+
+        final boolean connecting = mChromecastManager.isConnecting();
+        final boolean connected = mChromecastManager.isConnected();
+
+        if (connectingSpinnerView.isPresent()) {
+            connectingSpinnerView.get()
+                    .setVisibility(connecting ?
+                            View.VISIBLE:
+                            View.GONE);
+        }
+
+        if (disconnectedView.isPresent()) {
+            disconnectedView.get()
+                    .setVisibility(connecting ?
+                            View.GONE:
+                            connected ?
+                                    View.GONE:
+                                    View.VISIBLE);
+        }
+
+        if (connectedView.isPresent()) {
+            connectedView.get()
+                    .setVisibility(connecting ?
+                            View.GONE :
+                            connected ?
+                                    View.VISIBLE:
+                                    View.GONE);
+        }
+    }
+
+    @SuppressWarnings("unchecked")
+    <T extends View> Optional<T> findOptionalViewById(@IdRes int id) {
+        try {
+            return Optional.fromNullable((T) findViewById(id));
+        } catch (ClassCastException e) {
+            mLogger.e(TAG, "unable to cast view", e);
+            return Optional.absent();
         }
     }
 }
