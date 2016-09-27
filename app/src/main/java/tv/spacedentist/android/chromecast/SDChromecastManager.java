@@ -52,7 +52,7 @@ public class SDChromecastManager implements
 
     private boolean mWaitingForReconnect = false;
 
-    public SDChromecastManager(MembersInjector<SDChromecastManager> injector) {
+    public SDChromecastManager(MembersInjector<Object> injector) {
         injector.injectMembers(this);
     }
 
