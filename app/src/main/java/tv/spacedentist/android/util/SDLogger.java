@@ -2,25 +2,40 @@ package tv.spacedentist.android.util;
 
 import android.util.Log;
 
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 /**
  * A wrapper around {@link Log} that can be mocked and injected in tests.
  */
-public class SDLogger {
-    public SDLogger() {}
+public interface SDLogger {
+    void i(String tag, String msg);
+    void d(String tag, String msg);
+    void e(String tag, String msg);
+    void e(String tag, String msg, Throwable tr);
 
-    public void i(String tag, String msg) {
-        Log.i(tag, msg);
-    }
+    SDLogger JAVA_LOGGER = new SDLogger() {
 
-    public void d(String tag, String msg) {
-        Log.d(tag, msg);
-    }
+        private final Logger mLogger = Logger.getLogger("SDTV");
 
-    public void e(String tag, String msg) {
-        Log.e(tag, msg);
-    }
+        @Override
+        public void i(String tag, String msg) {
+            mLogger.log(Level.INFO, msg);
+        }
 
-    public void e(String tag, String msg, Throwable tr) {
-        Log.e(tag, msg, tr);
-    }
+        @Override
+        public void d(String tag, String msg) {
+            mLogger.log(Level.FINE, msg);
+        }
+
+        @Override
+        public void e(String tag, String msg) {
+            mLogger.log(Level.SEVERE, msg);
+        }
+
+        @Override
+        public void e(String tag, String msg, Throwable tr) {
+            mLogger.log(Level.SEVERE, msg, tr);
+        }
+    };
 }

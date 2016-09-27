@@ -14,6 +14,7 @@ import tv.spacedentist.android.chromecast.SDChromecastManager;
 import tv.spacedentist.android.chromecast.SDMediaRouteSelector;
 import tv.spacedentist.android.chromecast.SDMediaRouter;
 import tv.spacedentist.android.util.SDLogger;
+import tv.spacedentist.android.util.SDLoggerAndroid;
 
 @Module(
         injects = {
@@ -39,7 +40,7 @@ public class SDModule {
     @Provides
     @Singleton
     SDLogger provideLogger() {
-        return new SDLogger();
+        return new SDLoggerAndroid();
     }
 
     @Provides

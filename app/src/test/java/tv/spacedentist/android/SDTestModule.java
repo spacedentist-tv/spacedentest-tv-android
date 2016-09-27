@@ -24,7 +24,7 @@ import tv.spacedentist.android.util.SDLogger;
         overrides = true,
         library = true)
 public class SDTestModule {
-    @Mock private SDLogger mLogger;
+    private static final SDLogger mLogger = SDLogger.JAVA_LOGGER;
     @Mock private Cast.CastApi mCastApi;
     @Mock private SDMediaRouter mMediaRouter;
     @Mock private SDMediaRouteSelector mMediaRouteSelector;
