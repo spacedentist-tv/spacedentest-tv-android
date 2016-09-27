@@ -18,13 +18,13 @@ def getVersionName = { version, build ->
 }
 
 android {
-    compileSdkVersion 23
-    buildToolsVersion "23.0.2"
+    compileSdkVersion 24
+    buildToolsVersion "24.0.2"
 
     defaultConfig {
         applicationId "tv.spacedentist.android"
         minSdkVersion 9
-        targetSdkVersion 23
+        targetSdkVersion 24
         versionCode getVersionCode(VERSION, BUILD_NUMBER)
         versionName getVersionName(VERSION, BUILD_NUMBER)
         buildConfigField "String", "CHROMECAST_APP_NAMESPACE", '"urn:x-cast:tv.spacedentist.cast"'
@@ -72,13 +72,21 @@ android.applicationVariants.all { variant ->
 }
 
 dependencies {
-    compile 'com.android.support:appcompat-v7:23.4.0'
-    compile 'com.android.support:support-v4:23.4.0'
-    compile 'com.android.support:mediarouter-v7:23.4.0'
-    compile 'com.google.android.gms:play-services-cast:9.0.0'
+    compile 'com.android.support:appcompat-v7:24.2.1'
+    compile 'com.android.support:support-v4:24.2.1'
+    compile 'com.android.support:mediarouter-v7:24.2.1'
+    compile 'com.google.android.gms:play-services-cast:9.6.1'
 
+    // fun guava functional things
     compile 'com.google.guava:guava:18.0'
 
+    // annotations!
+    compile 'com.google.code.findbugs:jsr305:3.0.1'
+    compile 'com.google.errorprone:error_prone_annotations:2.0.6'
+    compile 'com.google.j2objc:j2objc-annotations:0.9.8'
+    compile 'org.codehaus.mojo:animal-sniffer-annotations:1.15'
+
+    // dependency injection
     compile 'com.squareup.dagger:dagger:1.2.2'
     provided 'com.squareup.dagger:dagger-compiler:1.2.2'
 
