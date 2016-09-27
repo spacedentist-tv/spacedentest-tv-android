@@ -2,6 +2,8 @@ package tv.spacedentist.android.chromecast;
 
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
+import android.support.annotation.VisibleForTesting;
 import android.support.v7.app.MediaRouteActionProvider;
 import android.support.v7.media.MediaRouter;
 
@@ -92,19 +94,24 @@ public class SDChromecastManager implements
     };
 
     public void launch() {
-        try {
-            CAST_API.launchApplication(mApiClient, BuildConfig.CHROMECAST_APP_ID, new LaunchOptions()).setResultCallback(LAUNCH_APPLICATION_CALLBACK);
-        } catch (Exception e) {
-            mLogger.e(TAG, "Failed to launch application", e);
+        if (mApiClient != null) {
+            try {
+                final LaunchOptions launchOptions = new LaunchOptions.Builder().build();
+                CAST_API.launchApplication(mApiClient, BuildConfig.CHROMECAST_APP_ID, launchOptions).setResultCallback(LAUNCH_APPLICATION_CALLBACK);
+            } catch (Exception e) {
+                mLogger.e(TAG, "Failed to launch application", e);
+            }
         }
     }
 
     protected void connect(MediaRouter.RouteInfo routeInfo) {
         mSelectedDevice = CastDevice.getFromBundle(routeInfo.getExtras());
-        Cast.CastOptions apiOptionsBuilder = new Cast.CastOptions.Builder(mSelectedDevice, new SDCastListener(this)).build();
-        mApiClient = mApiClientCreator.get(apiOptionsBuilder, this, this);
-        mApiClient.connect();
-        broadcastConnectionStateChange();
+        if (mSelectedDevice != null) {
+            Cast.CastOptions apiOptionsBuilder = new Cast.CastOptions.Builder(mSelectedDevice, new SDCastListener(this)).build();
+            mApiClient = mApiClientCreator.get(apiOptionsBuilder, this, this);
+            mApiClient.connect();
+            broadcastConnectionStateChange();
+        }
     }
 
     @Override
@@ -129,7 +136,8 @@ public class SDChromecastManager implements
         tearDown();
     }
 
-    protected void setApiClient(GoogleApiClient apiClient) {
+    @VisibleForTesting
+    void setApiClient(@Nullable GoogleApiClient apiClient) {
         mApiClient = apiClient;
     }
 
@@ -154,10 +162,12 @@ public class SDChromecastManager implements
     }
 
     private void connectChannel() {
-        try {
-            CAST_API.setMessageReceivedCallbacks(mApiClient, BuildConfig.CHROMECAST_APP_NAMESPACE, this);
-        } catch (IOException e) {
-            mLogger.e(TAG, "Exception while creating channel", e);
+        if (mApiClient != null) {
+            try {
+                CAST_API.setMessageReceivedCallbacks(mApiClient, BuildConfig.CHROMECAST_APP_NAMESPACE, this);
+            } catch (IOException e) {
+                mLogger.e(TAG, "Exception while creating channel", e);
+            }
         }
     }
 
@@ -228,8 +238,10 @@ public class SDChromecastManager implements
     };
 
     public void sendChromecastMessage(String message) {
-        CAST_API.sendMessage(mApiClient, BuildConfig.CHROMECAST_APP_NAMESPACE, message)
-                .setResultCallback(SEND_MESSAGE_CALLBACK);
+        if (mApiClient != null) {
+            CAST_API.sendMessage(mApiClient, BuildConfig.CHROMECAST_APP_NAMESPACE, message)
+                    .setResultCallback(SEND_MESSAGE_CALLBACK);
+        }
     }
 
     @Override
