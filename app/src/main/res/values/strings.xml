@@ -10,6 +10,13 @@
     <string name="no_chromecast_text">You need a Chromecast on your network to start Spacedentist.tv</string>
     <string name="disconnected_text">Please choose a Chromecast to start Spacedentist.tv</string>
 
+    <!-- Notifications -->
+    <string name="notification_content_text">Now casting!</string>
+    <string name="notification_action_text_stop">stop</string>
+    <string name="notification_action_text_trufax">trufax</string>
+    <string translatable="false" name="notification_intent_action_stop">tv.spacedentist.ACTION_STOP</string>
+    <string translatable="false" name="notification_intent_action_trufax">tv.spacedentist.ACTION_TRUFAX</string>
+
     <!-- text for the keypad -->
     <string name="keypad_one">1</string>
     <string name="keypad_two">2</string>

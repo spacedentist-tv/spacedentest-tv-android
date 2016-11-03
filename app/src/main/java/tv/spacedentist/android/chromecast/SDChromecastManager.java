@@ -14,15 +14,15 @@ import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.ResultCallback;
 import com.google.android.gms.common.api.Status;
-import com.google.common.collect.Sets;
 
 import java.io.IOException;
+import java.util.HashSet;
 import java.util.Set;
 
 import javax.inject.Inject;
 
-import dagger.MembersInjector;
 import tv.spacedentist.android.BuildConfig;
+import tv.spacedentist.android.SDComponent;
 import tv.spacedentist.android.util.SDLogger;
 
 /**
@@ -36,11 +36,11 @@ public class SDChromecastManager implements
         Cast.MessageReceivedCallback {
 
     private static final String TAG = SDChromecastManager.class.getSimpleName();
-    private static final Set<SDChromecastManagerListener> mListeners = Sets.newHashSet();
+    private static final Set<SDChromecastManagerListener> mListeners = new HashSet<>();
 
     @Inject SDMediaRouter mMediaRouter;
     @Inject SDMediaRouteSelector mMediaRouteSelector;
-    @Inject SDApiClientCreator mApiClientCreator;
+    @Inject SDApiClientCreator mApiClientCreator ;
     @Inject SDLogger mLogger;
     @Inject Cast.CastApi CAST_API;
 
@@ -52,9 +52,9 @@ public class SDChromecastManager implements
 
     private boolean mWaitingForReconnect = false;
 
-    public SDChromecastManager(MembersInjector<Object> injector) {
-        injector.injectMembers(this);
-    }
+    public SDChromecastManager(SDComponent component) {
+        component.inject(this);
+    };
 
     public void addListener(SDChromecastManagerListener listener) {
         mListeners.add(listener);
@@ -188,7 +188,7 @@ public class SDChromecastManager implements
         mLogger.d(TAG, "onMessageReceived: " + message);
     }
 
-    protected void tearDown() {
+    public void tearDown() {
         mLogger.d(TAG, "teardown");
         if (mApiClient != null) {
             if (mApiClient.isConnected() && mSessionId != null) {
@@ -228,12 +228,9 @@ public class SDChromecastManager implements
         return mMediaRouter.isRouteAvailable(mMediaRouteSelector, MediaRouter.AVAILABILITY_FLAG_IGNORE_DEFAULT_ROUTE);
     }
 
-    private ResultCallback<Status> SEND_MESSAGE_CALLBACK = new ResultCallback<Status>() {
-        @Override
-        public void onResult(@NonNull Status result) {
-            if (!result.isSuccess()) {
-                mLogger.e(TAG, "Sending message failed");
-            }
+    private ResultCallback<Status> SEND_MESSAGE_CALLBACK = result -> {
+        if (!result.isSuccess()) {
+            mLogger.e(TAG, "Sending message failed");
         }
     };
 

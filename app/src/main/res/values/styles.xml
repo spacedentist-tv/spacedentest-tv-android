@@ -4,7 +4,6 @@
     <style name="SDAppTheme" parent="Theme.AppCompat">
         <item tools:targetApi="11" name="android:windowActionBarOverlay">true</item>
         <item tools:targetApi="11" name="android:actionBarStyle">@style/SDActionBar</item>
-        <item name="android:buttonStyle">@style/SDButton</item>
         <item name="android:imageButtonStyle">@style/SDButton</item>
         <item name="android:progressBarStyle">@style/SDProgressBar</item>
 
