@@ -6,10 +6,9 @@ import com.google.android.gms.common.api.PendingResult;
 import com.google.android.gms.common.api.Result;
 import com.google.android.gms.common.api.Status;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-
-import javax.inject.Inject;
 
 import tv.spacedentist.android.DaggerSDComponent;
 import tv.spacedentist.android.SDComponent;
@@ -27,9 +26,8 @@ import static org.mockito.Mockito.when;
 
 public class SDChromecastManagerTestCase {
 
-    @Inject Cast.CastApi mCastApi;
+    private Cast.CastApi mCastApi;
     private SDChromecastManager mChromecastManager;
-
 
     @Before
     public void setUp() {
@@ -38,6 +36,13 @@ public class SDChromecastManagerTestCase {
                 .build();
 
         mChromecastManager = new SDChromecastManager(component);
+        mCastApi = component.getCastApi();
+    }
+
+    @After
+    public void tearDown() {
+        mChromecastManager = null;
+        mCastApi = null;
     }
 
     @Test
