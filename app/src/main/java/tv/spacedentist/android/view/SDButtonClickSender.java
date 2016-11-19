@@ -21,12 +21,8 @@ public class SDButtonClickSender implements View.OnClickListener {
     public void onClick(View v) {
         try {
             SDButton button = SDButton.fromResId(v.getId());
-            if (button != null) {
-                Log.d(TAG, "Button was clicked: " + button.getKey());
-                mChromecastManager.sendChromecastMessage(button.getMessage());
-            } else {
-                Log.e(TAG, "Invalid button res id: " + v.getId());
-            }
+            Log.d(TAG, "Button was clicked: " + button.getKey());
+            mChromecastManager.sendChromecastMessage(button.getMessage());
         } catch (JSONException e) {
             Log.e(TAG, "Exception while sending message", e);
         }

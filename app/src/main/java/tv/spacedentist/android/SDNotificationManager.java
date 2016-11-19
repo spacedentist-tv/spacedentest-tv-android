@@ -77,21 +77,13 @@ public class SDNotificationManager implements SDChromecastManagerListener {
         final Intent contentIntent = new Intent();
         contentIntent.setClass(mContext, SDMainActivity.class);
         contentIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        return PendingIntent.getActivity(
-                mContext,
-                0,
-                contentIntent,
-                0);
+        return PendingIntent.getActivity(mContext, 0, contentIntent, 0);
     }
 
     private PendingIntent createActionIntent(@StringRes int actionId) {
         final Intent contentIntent = new Intent(mContext.getString(actionId));
         contentIntent.setClass(mContext, SDNotificationReceiver.class);
-        return PendingIntent.getBroadcast(
-                mContext,
-                0,
-                contentIntent,
-                0);
+        return PendingIntent.getBroadcast(mContext, 0, contentIntent, 0);
     }
 
     /**

@@ -37,7 +37,7 @@ public class SDNotificationReceiver extends BroadcastReceiver {
         } else if (context.getString(R.string.notification_intent_action_trufax).equals(intent.getAction())) {
             // We've got the trufax intent so send that button message to the chromecast
             try {
-                getChromecastManager(context).sendChromecastMessage(SDButton.BUTTON_TEXT.getMessage());
+                getChromecastManager(context).sendChromecastMessage(SDButton.BUTTON_TRUFAX.getMessage());
             } catch (JSONException e) {
                 getLogger(context).e(TAG, "error sending message to chromecast", e);
             }

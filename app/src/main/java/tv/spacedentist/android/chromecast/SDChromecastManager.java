@@ -29,7 +29,6 @@ import tv.spacedentist.android.util.SDLogger;
  * This is where most of the Chormecast logic happens
  */
 public class SDChromecastManager implements
-        SDMediaRouterCallback.Callback,
         SDCastListener.Callback,
         GoogleApiClient.ConnectionCallbacks,
         GoogleApiClient.OnConnectionFailedListener,
@@ -40,7 +39,7 @@ public class SDChromecastManager implements
 
     @Inject SDMediaRouter mMediaRouter;
     @Inject SDMediaRouteSelector mMediaRouteSelector;
-    @Inject SDApiClientCreator mApiClientCreator ;
+    @Inject SDApiClientCreator mApiClientCreator;
     @Inject SDLogger mLogger;
     @Inject Cast.CastApi CAST_API;
 
@@ -54,7 +53,37 @@ public class SDChromecastManager implements
 
     public SDChromecastManager(SDComponent component) {
         component.inject(this);
-    };
+
+        mMediaRouter.addCallback(
+                mMediaRouteSelector,
+                new MediaRouter.Callback() {
+                    @Override
+                    public void onRouteSelected(MediaRouter router, MediaRouter.RouteInfo routeInfo) {
+                        connect(routeInfo);
+                    }
+
+                    @Override
+                    public void onRouteUnselected(MediaRouter router, MediaRouter.RouteInfo info) {
+                        tearDown();
+                    }
+
+                    @Override
+                    public void onRouteAdded(MediaRouter router, MediaRouter.RouteInfo route) {
+                        broadcastConnectionStateChange();
+                    }
+
+                    @Override
+                    public void onRouteRemoved(MediaRouter router, MediaRouter.RouteInfo route) {
+                        broadcastConnectionStateChange();
+                    }
+
+                    @Override
+                    public void onRouteChanged(MediaRouter router, MediaRouter.RouteInfo route) {
+                        broadcastConnectionStateChange();
+                    }
+                },
+                MediaRouter.CALLBACK_FLAG_REQUEST_DISCOVERY);
+    }
 
     public void addListener(SDChromecastManagerListener listener) {
         mListeners.add(listener);
@@ -216,14 +245,6 @@ public class SDChromecastManager implements
         broadcastConnectionStateChange();
     }
 
-    public void addMediaRouterCallback(MediaRouter.Callback mediaRouterCallback) {
-        mMediaRouter.addCallback(mMediaRouteSelector, mediaRouterCallback, MediaRouter.CALLBACK_FLAG_REQUEST_DISCOVERY);
-    }
-
-    public void removeMediaRouterCallback(MediaRouter.Callback mediaRouterCallback) {
-        mMediaRouter.removeCallback(mediaRouterCallback);
-    }
-
     public boolean isRouteAvailable() {
         return mMediaRouter.isRouteAvailable(mMediaRouteSelector, MediaRouter.AVAILABILITY_FLAG_IGNORE_DEFAULT_ROUTE);
     }
@@ -239,30 +260,5 @@ public class SDChromecastManager implements
             CAST_API.sendMessage(mApiClient, BuildConfig.CHROMECAST_APP_NAMESPACE, message)
                     .setResultCallback(SEND_MESSAGE_CALLBACK);
         }
-    }
-
-    @Override
-    public void onRouteSelected(MediaRouter router, MediaRouter.RouteInfo routeInfo) {
-        connect(routeInfo);
-    }
-
-    @Override
-    public void onRouteUnselected(MediaRouter router, MediaRouter.RouteInfo info) {
-        tearDown();
-    }
-
-    @Override
-    public void onRouteAdded(MediaRouter router, MediaRouter.RouteInfo route) {
-        broadcastConnectionStateChange();
-    }
-
-    @Override
-    public void onRouteRemoved(MediaRouter router, MediaRouter.RouteInfo route) {
-        broadcastConnectionStateChange();
-    }
-
-    @Override
-    public void onRouteChanged(MediaRouter router, MediaRouter.RouteInfo route) {
-        broadcastConnectionStateChange();
     }
 }

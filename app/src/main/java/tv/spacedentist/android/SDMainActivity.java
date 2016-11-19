@@ -6,7 +6,6 @@ import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.app.MediaRouteActionProvider;
-import android.support.v7.media.MediaRouter;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -20,7 +19,6 @@ import javax.inject.Inject;
 
 import tv.spacedentist.android.chromecast.SDChromecastManager;
 import tv.spacedentist.android.chromecast.SDChromecastManagerListener;
-import tv.spacedentist.android.chromecast.SDMediaRouterCallback;
 import tv.spacedentist.android.util.SDLogger;
 import tv.spacedentist.android.view.SDButton;
 import tv.spacedentist.android.view.SDButtonClickSender;
@@ -36,17 +34,14 @@ public class SDMainActivity extends AppCompatActivity implements SDChromecastMan
     @Inject SDNotificationManager mNotificationManager;
     @Inject SDChromecastManager mChromecastManager;
     @Inject SDLogger mLogger;
-    private MediaRouter.Callback mMediaRouterCallback;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
         setContentView(R.layout.activity_main);
-
         ((SDApplication) getApplication()).getComponent().inject(this);
 
-        mMediaRouterCallback = new SDMediaRouterCallback(mChromecastManager);
+        mLogger.d(TAG, "onCreate()");
 
         mChromecastManager.addListener(this);
 
@@ -74,6 +69,8 @@ public class SDMainActivity extends AppCompatActivity implements SDChromecastMan
     protected void onDestroy() {
         super.onDestroy();
 
+        mLogger.d(TAG, "onDestroy()");
+
         mChromecastManager.removeListener(this);
     }
 
@@ -98,14 +95,13 @@ public class SDMainActivity extends AppCompatActivity implements SDChromecastMan
     @Override
     public void onStart() {
         super.onStart();
-        mLogger.d(TAG, "onStart()");
-        mChromecastManager.addMediaRouterCallback(mMediaRouterCallback);
+        mLogger.d(TAG, "onStart() route available: " + mChromecastManager.isRouteAvailable());
+
     }
 
     @Override
     public void onStop() {
         mLogger.d(TAG, "onStop");
-        mChromecastManager.removeMediaRouterCallback(mMediaRouterCallback);
         super.onStop();
     }
 

@@ -47,18 +47,11 @@ public class SDModule {
 
     @Provides
     SDApiClientCreator provideApiClientCreator() {
-        return new SDApiClientCreator() {
-            @Override
-            public GoogleApiClient get(Cast.CastOptions castOptions,
-                                       GoogleApiClient.ConnectionCallbacks connectionCallbacks,
-                                       GoogleApiClient.OnConnectionFailedListener connectionFailedListener) {
-                return new GoogleApiClient.Builder(mApplication)
-                        .addApi(Cast.API, castOptions)
-                        .addConnectionCallbacks(connectionCallbacks)
-                        .addOnConnectionFailedListener(connectionFailedListener)
-                        .build();
-            }
-        };
+        return (castOptions, connectionCallbacks, connectionFailedListener) -> new GoogleApiClient.Builder(mApplication)
+                .addApi(Cast.API, castOptions)
+                .addConnectionCallbacks(connectionCallbacks)
+                .addOnConnectionFailedListener(connectionFailedListener)
+                .build();
     }
 
     @Provides

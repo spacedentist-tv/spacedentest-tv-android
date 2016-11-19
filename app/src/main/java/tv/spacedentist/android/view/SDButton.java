@@ -21,7 +21,7 @@ public enum SDButton {
     BUTTON_EIGHT(R.id.button_eight, "8"),
     BUTTON_NINE(R.id.button_nine, "9"),
     BUTTON_ZERO(R.id.button_zero, "0"),
-    BUTTON_TEXT(R.id.button_text, "cycle");
+    BUTTON_TRUFAX(R.id.button_text, "cycle");
 
     private static final String SDTV_MSG_KEY = "sdtv_msg";
     private static final String SDTV_REMOTE_CONTROL_KEY = "rc";
@@ -50,7 +50,7 @@ public enum SDButton {
             }
         }
 
-        return null;
+        throw new IllegalStateException("resource id didn't match up with a button");
     }
 
     public String getMessage() throws JSONException {
