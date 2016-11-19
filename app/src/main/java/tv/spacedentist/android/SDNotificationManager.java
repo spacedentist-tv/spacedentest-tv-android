@@ -7,6 +7,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.support.annotation.StringRes;
 import android.support.v4.app.NotificationCompat.Action;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.NotificationCompat;
 
 import javax.inject.Inject;
@@ -68,6 +69,7 @@ public class SDNotificationManager implements SDChromecastManagerListener {
     private Notification createNotification() {
         return new NotificationCompat.Builder(mContext)
                 .setContentTitle(mContext.getString(R.string.notification_title_text))
+                .setColor(ContextCompat.getColor(mContext, R.color.sd_notification_accent))
                 .setContentText(
                         String.format(
                                 mContext.getString(R.string.notification_content_text_format),

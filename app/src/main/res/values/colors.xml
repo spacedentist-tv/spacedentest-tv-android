@@ -3,4 +3,5 @@
     <color name="sd_action_bar_background">#80000000</color>
     <color name="sd_text">#eeeeee</color>
     <color name="sd_text_pressed">#666666</color>
+    <color name="sd_notification_accent">#666666</color>
 </resources>
