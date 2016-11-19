@@ -6,6 +6,7 @@ import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.support.annotation.StringRes;
+import android.support.v4.app.NotificationCompat.Action;
 import android.support.v7.app.NotificationCompat;
 
 import javax.inject.Inject;
@@ -31,12 +32,13 @@ public class SDNotificationManager implements SDChromecastManagerListener {
 
     private static final int NOTIFICATION_ID = 1;
 
-    Context mContext;
+    private final Context mContext;
     @Inject SDChromecastManager mChromecastManager;
     @Inject SDLogger mLogger;
 
     private final NotificationManager mNotificationManager;
-    private final Notification mNotification;
+    private final Action mStopAction;
+    private final Action mTextAction;
 
     private boolean mActivityOpen;
 
@@ -50,28 +52,33 @@ public class SDNotificationManager implements SDChromecastManagerListener {
 
         mChromecastManager.addListener(this);
 
-        final NotificationCompat.Action stopAction = new NotificationCompat.Action.Builder(
+        mStopAction = new Action.Builder(
                 R.drawable.cast_ic_notification_on,
                 context.getString(R.string.notification_action_text_stop),
                 createActionIntent(R.string.notification_intent_action_stop))
                 .build();
 
-        final NotificationCompat.Action textAction = new NotificationCompat.Action.Builder(
+        mTextAction = new Action.Builder(
                 R.drawable.sd_text,
                 context.getString(R.string.notification_action_text_trufax),
                 createActionIntent(R.string.notification_intent_action_trufax))
                 .build();
+    };
 
-        mNotification = new NotificationCompat.Builder(mContext)
-                .setContentTitle(mContext.getString(R.string.app_name))
-                .setContentText(mContext.getString(R.string.notification_content_text))
+    private Notification createNotification() {
+        return new NotificationCompat.Builder(mContext)
+                .setContentTitle(mContext.getString(R.string.notification_title_text))
+                .setContentText(
+                        String.format(
+                                mContext.getString(R.string.notification_content_text_format),
+                                mChromecastManager.getSelectedDeviceFriendlyName()))
                 .setSmallIcon(R.drawable.ic_small_icon)
                 .setContentIntent(createOpenIntent())
-                .addAction(stopAction)
-                .addAction(textAction)
+                .addAction(mTextAction)
+                .addAction(mStopAction)
                 .setStyle(new NotificationCompat.MediaStyle().setShowActionsInCompactView(0, 1))
                 .build();
-    };
+    }
 
     private PendingIntent createOpenIntent() {
         final Intent contentIntent = new Intent();
@@ -110,7 +117,7 @@ public class SDNotificationManager implements SDChromecastManagerListener {
     private void checkNotification() {
         if (mChromecastManager.isConnected() && !mActivityOpen) {
             mLogger.i(TAG, "show notification");
-            mNotificationManager.notify(NOTIFICATION_ID, mNotification);
+            mNotificationManager.notify(NOTIFICATION_ID, createNotification());
         } else {
             mLogger.i(TAG, "hide notification");
             mNotificationManager.cancel(NOTIFICATION_ID);

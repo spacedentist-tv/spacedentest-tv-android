@@ -11,7 +11,8 @@
     <string name="disconnected_text">Please choose a Chromecast to start Spacedentist.tv</string>
 
     <!-- Notifications -->
-    <string name="notification_content_text">Now casting!</string>
+    <string name="notification_title_text">Now casting!</string>
+    <string name="notification_content_text_format">Connected to %1$s</string>
     <string name="notification_action_text_stop">stop</string>
     <string name="notification_action_text_trufax">trufax</string>
     <string translatable="false" name="notification_intent_action_stop">tv.spacedentist.ACTION_STOP</string>

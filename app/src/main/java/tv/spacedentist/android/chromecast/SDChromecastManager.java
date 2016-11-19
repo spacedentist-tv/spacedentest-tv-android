@@ -249,6 +249,10 @@ public class SDChromecastManager implements
         return mMediaRouter.isRouteAvailable(mMediaRouteSelector, MediaRouter.AVAILABILITY_FLAG_IGNORE_DEFAULT_ROUTE);
     }
 
+    public @Nullable String getSelectedDeviceFriendlyName() {
+        return mSelectedDevice == null ? null : mSelectedDevice.getFriendlyName();
+    }
+
     private ResultCallback<Status> SEND_MESSAGE_CALLBACK = result -> {
         if (!result.isSuccess()) {
             mLogger.e(TAG, "Sending message failed");
