@@ -63,9 +63,6 @@ android {
             buildConfigField "String", "CHROMECAST_APP_ID", '"CBEF7615"'
         }
     }
-    lintOptions {
-        abortOnError false
-    }
 }
 
 android.applicationVariants.all { variant ->
