@@ -39,7 +39,7 @@ public class SDNotificationManager implements SDChromecastManagerListener {
 
     private final NotificationManager mNotificationManager;
     private final Action mStopAction;
-    private final Action mTextAction;
+    private final Action mTrufaxAction;
 
     private boolean mActivityOpen;
 
@@ -59,8 +59,8 @@ public class SDNotificationManager implements SDChromecastManagerListener {
                 createActionIntent(R.string.notification_intent_action_stop))
                 .build();
 
-        mTextAction = new Action.Builder(
-                R.drawable.sd_text,
+        mTrufaxAction = new Action.Builder(
+                R.drawable.sd_trufax,
                 context.getString(R.string.notification_action_text_trufax),
                 createActionIntent(R.string.notification_intent_action_trufax))
                 .build();
@@ -76,7 +76,7 @@ public class SDNotificationManager implements SDChromecastManagerListener {
                                 mChromecastManager.getSelectedDeviceFriendlyName()))
                 .setSmallIcon(R.drawable.ic_small_icon)
                 .setContentIntent(createOpenIntent())
-                .addAction(mTextAction)
+                .addAction(mTrufaxAction)
                 .addAction(mStopAction)
                 .setStyle(new NotificationCompat.MediaStyle().setShowActionsInCompactView(0, 1))
                 .build();

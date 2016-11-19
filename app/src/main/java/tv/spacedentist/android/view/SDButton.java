@@ -21,7 +21,7 @@ public enum SDButton {
     BUTTON_EIGHT(R.id.button_eight, "8"),
     BUTTON_NINE(R.id.button_nine, "9"),
     BUTTON_ZERO(R.id.button_zero, "0"),
-    BUTTON_TRUFAX(R.id.button_text, "cycle");
+    BUTTON_TRUFAX(R.id.button_trufax, "cycle");
 
     private static final String SDTV_MSG_KEY = "sdtv_msg";
     private static final String SDTV_REMOTE_CONTROL_KEY = "rc";
