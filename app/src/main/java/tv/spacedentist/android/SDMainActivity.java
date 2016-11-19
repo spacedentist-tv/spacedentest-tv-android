@@ -6,7 +6,6 @@ import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.app.MediaRouteActionProvider;
-import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -49,10 +48,7 @@ public class SDMainActivity extends AppCompatActivity implements SDChromecastMan
         if (actionBar != null) {
             actionBar.setDisplayShowCustomEnabled(true);
             actionBar.setDisplayShowTitleEnabled(false);
-
-            LayoutInflater inflater = LayoutInflater.from(this);
-            View titleView = inflater.inflate(R.layout.action_bar_title, null);
-            actionBar.setCustomView(titleView);
+            actionBar.setCustomView(R.layout.action_bar_title);
         }
 
         final SDButtonClickSender buttonClickSender = new SDButtonClickSender(mChromecastManager);
