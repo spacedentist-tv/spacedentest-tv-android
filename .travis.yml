@@ -21,7 +21,6 @@ cache:
   - $HOME/.m2
 script:
 - ./gradlew clean lintProdRelease testProdReleaseUnitTest assembleProdRelease
-- ~/.android-sdk/build-tools/25.0.0/aapt dump badging app/build/outputs/apk/app-prod-release-$TRAVIS_TAG.$TRAVIS_BUILD_NUMBER.apk
 deploy:
   provider: releases
   skip_cleanup: true
@@ -33,8 +32,6 @@ deploy:
     all_branches: true
     tags: true
     condition: "$TRAVIS_TAG =~ ^[0-9]+\\.[0-9]+\\.[0-9]+$"
-after_failure:
-- adb logcat -d
 env:
   global:
   - secure: Nxrw4qcAT3WiM+KLn7plVP69GQt0JOcgqMfhBsGfIat1+GvMXdFBgwJA+oa8G8UKPix2flrEChTjDodYBOnfJGxkqDymgV322zWEyv6ufBGvsozw0dyO+Vrxub+bc/yb2EI0HaehGL3HCL7Ine3/KXRO43ugfonbuzK1SsGhl9Q=
