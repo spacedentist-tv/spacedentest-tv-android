@@ -17,6 +17,7 @@ cache:
   - "$HOME/.m2"
 script:
 - "./gradlew clean lintProdRelease testProdReleaseUnitTest assembleProdRelease"
+- "aapt aapt dump badging app/build/outputs/apk/app-prod-release-$TRAVIS_TAG.$TRAVIS_BUILD_NUMBER.apk"
 deploy:
   provider: releases
   skip_cleanup: true

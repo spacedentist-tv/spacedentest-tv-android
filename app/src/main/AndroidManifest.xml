@@ -25,8 +25,8 @@
         <receiver android:name=".SDNotificationReceiver"
             android:exported="false">
             <intent-filter>
-                <action android:name="@string/notification_intent_action_stop" />
-                <action android:name="@string/notification_intent_action_trufax" />
+                <action android:name="tv.spacedentist.ACTION_STOP" />
+                <action android:name="tv.spacedentist.ACTION_TRUFAX" />
             </intent-filter>
         </receiver>
 
