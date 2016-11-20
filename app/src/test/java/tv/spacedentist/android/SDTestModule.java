@@ -8,9 +8,10 @@ import org.mockito.MockitoAnnotations;
 import tv.spacedentist.android.chromecast.SDMediaRouteSelector;
 import tv.spacedentist.android.chromecast.SDMediaRouter;
 import tv.spacedentist.android.util.SDLogger;
+import tv.spacedentist.android.util.SDLoggerJava;
 
 public class SDTestModule extends SDModule {
-    private static final SDLogger mLogger = SDLogger.JAVA_LOGGER;
+    private static final SDLogger mLogger = new SDLoggerJava();
     @Mock private Cast.CastApi mCastApi;
     @Mock private SDMediaRouter mMediaRouter;
     @Mock private SDMediaRouteSelector mMediaRouteSelector;

@@ -13,6 +13,7 @@ import tv.spacedentist.android.chromecast.SDMediaRouteSelector;
 import tv.spacedentist.android.chromecast.SDMediaRouter;
 import tv.spacedentist.android.util.SDLogger;
 import tv.spacedentist.android.util.SDLoggerAndroid;
+import tv.spacedentist.android.util.SDLoggerNull;
 
 @Module
 public class SDModule {
@@ -26,7 +27,7 @@ public class SDModule {
     @Provides
     @Singleton
     SDLogger provideLogger() {
-        return new SDLoggerAndroid();
+        return BuildConfig.DEBUG ? new SDLoggerAndroid() : new SDLoggerNull();
     }
 
     @Provides
