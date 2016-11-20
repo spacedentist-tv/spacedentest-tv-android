@@ -1,21 +1,21 @@
 package tv.spacedentist.android.chromecast;
 
-import android.test.suitebuilder.annotation.SmallTest;
-
 import com.google.android.gms.cast.Cast;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.PendingResult;
 import com.google.android.gms.common.api.Result;
 import com.google.android.gms.common.api.Status;
 
-import junit.framework.TestCase;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
 
-import javax.inject.Inject;
-
-import dagger.MembersInjector;
-import dagger.ObjectGraph;
+import tv.spacedentist.android.DaggerSDComponent;
+import tv.spacedentist.android.SDComponent;
 import tv.spacedentist.android.SDTestModule;
 
+import static junit.framework.Assert.assertFalse;
+import static junit.framework.Assert.assertTrue;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.mock;
@@ -24,27 +24,28 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-public class SDChromecastManagerTestCase extends TestCase implements MembersInjector {
+public class SDChromecastManagerTestCase {
 
-    @Inject Cast.CastApi mCastApi;
-    private ObjectGraph mObjectGraph;
+    private Cast.CastApi mCastApi;
     private SDChromecastManager mChromecastManager;
 
-    @Override
-    public void injectMembers(Object instance) {
-        mObjectGraph.inject(instance);
+    @Before
+    public void setUp() {
+        SDComponent component = DaggerSDComponent.builder()
+                .sDModule(new SDTestModule())
+                .build();
+
+        mChromecastManager = new SDChromecastManager(component);
+        mCastApi = component.getCastApi();
     }
 
-    @Override
-    protected void setUp() throws Exception {
-        super.setUp();
-
-        mObjectGraph = ObjectGraph.create(SDTestModule.class);
-        this.injectMembers(this);
-        mChromecastManager = new SDChromecastManager(this);
+    @After
+    public void tearDown() {
+        mChromecastManager = null;
+        mCastApi = null;
     }
 
-    @SmallTest
+    @Test
     public void testAddListener() {
         SDChromecastManagerListener listener = mock(SDChromecastManagerListener.class);
         mChromecastManager.addListener(listener);
@@ -53,7 +54,7 @@ public class SDChromecastManagerTestCase extends TestCase implements MembersInje
         verify(listener, times(1)).onConnectionStateChanged();
     }
 
-    @SmallTest
+    @Test
     public void testAddSameListenerTwice() {
         SDChromecastManagerListener listener = mock(SDChromecastManagerListener.class);
         mChromecastManager.addListener(listener);
@@ -63,7 +64,7 @@ public class SDChromecastManagerTestCase extends TestCase implements MembersInje
         verify(listener, times(1)).onConnectionStateChanged();
     }
 
-    @SmallTest
+    @Test
     public void testAddTwoListeners() {
         SDChromecastManagerListener listener1 = mock(SDChromecastManagerListener.class);
         SDChromecastManagerListener listener2 = mock(SDChromecastManagerListener.class);
@@ -76,7 +77,7 @@ public class SDChromecastManagerTestCase extends TestCase implements MembersInje
         verify(listener2, times(1)).onConnectionStateChanged();
     }
 
-    @SmallTest
+    @Test
     public void testRemoveListener() {
         SDChromecastManagerListener listener = mock(SDChromecastManagerListener.class);
         mChromecastManager.addListener(listener);
@@ -85,7 +86,7 @@ public class SDChromecastManagerTestCase extends TestCase implements MembersInje
         verify(listener, never()).onConnectionStateChanged();
     }
 
-    @SmallTest
+    @Test
     public void testRemoveTwoListeners() {
         SDChromecastManagerListener listener1 = mock(SDChromecastManagerListener.class);
         SDChromecastManagerListener listener2 = mock(SDChromecastManagerListener.class);
@@ -97,7 +98,7 @@ public class SDChromecastManagerTestCase extends TestCase implements MembersInje
         verify(listener2, times(1)).onConnectionStateChanged();
     }
 
-    @SmallTest
+    @Test
     public void testRemoveUnaddedListener() {
         SDChromecastManagerListener listener = mock(SDChromecastManagerListener.class);
         mChromecastManager.removeListener(listener);
@@ -105,7 +106,7 @@ public class SDChromecastManagerTestCase extends TestCase implements MembersInje
         verify(listener, never()).onConnectionStateChanged();
     }
 
-    @SmallTest
+    @Test
     public void testIsConnecting() {
         GoogleApiClient apiClient = mock(GoogleApiClient.class);
         assertFalse(mChromecastManager.isConnecting());
@@ -119,7 +120,7 @@ public class SDChromecastManagerTestCase extends TestCase implements MembersInje
         assertFalse(mChromecastManager.isConnecting());
     }
 
-    @SmallTest
+    @Test
     public void testIsConnected() {
         GoogleApiClient apiClient = mock(GoogleApiClient.class);
         assertFalse(mChromecastManager.isConnected());
@@ -133,12 +134,12 @@ public class SDChromecastManagerTestCase extends TestCase implements MembersInje
         assertFalse(mChromecastManager.isConnected());
     }
 
-    @SmallTest
+    @Test
     public void testLaunch() {
         mChromecastManager.launch();
     }
 
-    @SmallTest
+    @Test
     public void testSendChromecastMessage() {
         GoogleApiClient apiClient = mock(GoogleApiClient.class);
         mChromecastManager.setApiClient(apiClient);

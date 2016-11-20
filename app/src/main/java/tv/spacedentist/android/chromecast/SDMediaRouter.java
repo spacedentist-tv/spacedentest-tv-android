@@ -4,7 +4,7 @@ import android.content.Context;
 import android.support.v7.media.MediaRouter;
 
 public class SDMediaRouter {
-    MediaRouter mMediaRouter;
+    private MediaRouter mMediaRouter;
 
     public SDMediaRouter(Context context) {
         mMediaRouter = MediaRouter.getInstance(context);

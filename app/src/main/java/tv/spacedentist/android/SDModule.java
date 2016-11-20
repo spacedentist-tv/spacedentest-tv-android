@@ -1,7 +1,5 @@
 package tv.spacedentist.android;
 
-import android.content.Context;
-
 import com.google.android.gms.cast.Cast;
 import com.google.android.gms.common.api.GoogleApiClient;
 
@@ -16,23 +14,11 @@ import tv.spacedentist.android.chromecast.SDMediaRouter;
 import tv.spacedentist.android.util.SDLogger;
 import tv.spacedentist.android.util.SDLoggerAndroid;
 
-@Module(
-        injects = {
-                Context.class,
-                SDMainActivity.class,
-                SDMediaRouter.class,
-                SDMediaRouteSelector.class,
-                SDApiClientCreator.class,
-                SDChromecastManager.class,
-                com.google.android.gms.cast.Cast.CastApi.class
-        }
-)
+@Module
 public class SDModule {
 
-    private SDApplication mApplication;
+    private final SDApplication mApplication;
 
-    /** No-args constructor needed to override in SDTestModule */
-    public SDModule() {}
     public SDModule(SDApplication application) {
         mApplication = application;
     }
@@ -61,23 +47,22 @@ public class SDModule {
 
     @Provides
     SDApiClientCreator provideApiClientCreator() {
-        return new SDApiClientCreator() {
-            @Override
-            public GoogleApiClient get(Cast.CastOptions castOptions,
-                                       GoogleApiClient.ConnectionCallbacks connectionCallbacks,
-                                       GoogleApiClient.OnConnectionFailedListener connectionFailedListener) {
-                return new GoogleApiClient.Builder(mApplication)
-                        .addApi(Cast.API, castOptions)
-                        .addConnectionCallbacks(connectionCallbacks)
-                        .addOnConnectionFailedListener(connectionFailedListener)
-                        .build();
-            }
-        };
+        return (castOptions, connectionCallbacks, connectionFailedListener) -> new GoogleApiClient.Builder(mApplication)
+                .addApi(Cast.API, castOptions)
+                .addConnectionCallbacks(connectionCallbacks)
+                .addOnConnectionFailedListener(connectionFailedListener)
+                .build();
     }
 
     @Provides
     @Singleton
     SDChromecastManager provideChromecastManager() {
-        return new SDChromecastManager(mApplication);
+        return new SDChromecastManager(mApplication.getComponent());
+    }
+
+    @Provides
+    @Singleton
+    SDNotificationManager provideNotificationManager() {
+        return new SDNotificationManager(mApplication, mApplication.getComponent());
     }
 }

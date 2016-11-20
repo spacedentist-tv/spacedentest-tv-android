@@ -20,7 +20,8 @@
             android:text="@string/keypad_one"
             android:textSize="@dimen/button_text_size"
             android:id="@+id/button_one"
-            android:layout_column="0"/>
+            android:layout_column="0"
+            style="@style/SDButton"/>
 
         <tv.spacedentist.android.view.SDButtonView
             android:layout_width="wrap_content"
@@ -28,7 +29,8 @@
             android:text="@string/keypad_two"
             android:textSize="@dimen/button_text_size"
             android:id="@+id/button_two"
-            android:layout_column="1"/>
+            android:layout_column="1"
+            style="@style/SDButton"/>
 
         <tv.spacedentist.android.view.SDButtonView
             android:layout_width="wrap_content"
@@ -36,7 +38,8 @@
             android:text="@string/keypad_three"
             android:textSize="@dimen/button_text_size"
             android:id="@+id/button_three"
-            android:layout_column="2"/>
+            android:layout_column="2"
+            style="@style/SDButton"/>
 
     </TableRow>
 
@@ -52,7 +55,8 @@
             android:text="@string/keypad_four"
             android:textSize="@dimen/button_text_size"
             android:id="@+id/button_four"
-            android:layout_column="0"/>
+            android:layout_column="0"
+            style="@style/SDButton"/>
 
         <tv.spacedentist.android.view.SDButtonView
             android:layout_width="wrap_content"
@@ -60,7 +64,8 @@
             android:text="@string/keypad_five"
             android:textSize="@dimen/button_text_size"
             android:id="@+id/button_five"
-            android:layout_column="1"/>
+            android:layout_column="1"
+            style="@style/SDButton"/>
 
         <tv.spacedentist.android.view.SDButtonView
             android:layout_width="wrap_content"
@@ -68,7 +73,8 @@
             android:text="@string/keypad_six"
             android:textSize="@dimen/button_text_size"
             android:id="@+id/button_six"
-            android:layout_column="2"/>
+            android:layout_column="2"
+            style="@style/SDButton"/>
 
     </TableRow>
 
@@ -84,7 +90,8 @@
             android:text="@string/keypad_seven"
             android:textSize="@dimen/button_text_size"
             android:id="@+id/button_seven"
-            android:layout_column="0"/>
+            android:layout_column="0"
+            style="@style/SDButton"/>
 
         <tv.spacedentist.android.view.SDButtonView
             android:layout_width="wrap_content"
@@ -92,7 +99,8 @@
             android:text="@string/keypad_eight"
             android:textSize="@dimen/button_text_size"
             android:id="@+id/button_eight"
-            android:layout_column="1"/>
+            android:layout_column="1"
+            style="@style/SDButton"/>
 
         <tv.spacedentist.android.view.SDButtonView
             android:layout_width="wrap_content"
@@ -100,7 +108,8 @@
             android:text="@string/keypad_nine"
             android:textSize="@dimen/button_text_size"
             android:id="@+id/button_nine"
-            android:layout_column="2"/>
+            android:layout_column="2"
+            style="@style/SDButton"/>
 
     </TableRow>
 
@@ -115,8 +124,8 @@
             android:contentDescription="@string/keypad_trufax_content_description"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:src="@drawable/sd_text_button"
-            android:id="@+id/button_text"
+            android:src="@drawable/sd_trufax_button"
+            android:id="@+id/button_trufax"
             android:layout_gravity="center"
             android:layout_column="0"/>
 
@@ -126,7 +135,8 @@
             android:text="@string/keypad_zero"
             android:textSize="@dimen/button_text_size"
             android:id="@+id/button_zero"
-            android:layout_column="1"/>
+            android:layout_column="1"
+            style="@style/SDButton"/>
 
     </TableRow>
 

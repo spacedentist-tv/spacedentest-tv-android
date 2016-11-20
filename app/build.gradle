@@ -18,16 +18,23 @@ def getVersionName = { version, build ->
 }
 
 android {
-    compileSdkVersion 24
-    buildToolsVersion "24.0.2"
+    compileSdkVersion 25
+    buildToolsVersion "25.0.0"
 
     defaultConfig {
         applicationId "tv.spacedentist.android"
         minSdkVersion 9
-        targetSdkVersion 24
+        targetSdkVersion 25
         versionCode getVersionCode(VERSION, BUILD_NUMBER)
         versionName getVersionName(VERSION, BUILD_NUMBER)
         buildConfigField "String", "CHROMECAST_APP_NAMESPACE", '"urn:x-cast:tv.spacedentist.cast"'
+        jackOptions {
+            enabled true
+        }
+    }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
     }
     signingConfigs {
         release {
@@ -56,9 +63,6 @@ android {
             buildConfigField "String", "CHROMECAST_APP_ID", '"CBEF7615"'
         }
     }
-    lintOptions {
-        abortOnError false
-    }
 }
 
 android.applicationVariants.all { variant ->
@@ -75,17 +79,14 @@ android.applicationVariants.all { variant ->
 }
 
 dependencies {
-    compile 'com.android.support:appcompat-v7:24.2.1'
-    compile 'com.android.support:support-v4:24.2.1'
-    compile 'com.android.support:mediarouter-v7:24.2.1'
-    compile 'com.google.android.gms:play-services-cast:9.6.1'
-
-    // fun guava functional things
-    compile 'com.google.guava:guava:18.0'
+    compile 'com.android.support:appcompat-v7:25.0.1'
+    compile 'com.android.support:support-v4:25.0.1'
+    compile 'com.android.support:mediarouter-v7:25.0.1'
+    compile 'com.google.android.gms:play-services-cast:9.8.0'
 
     // dependency injection
-    compile 'com.squareup.dagger:dagger:1.2.2'
-    provided 'com.squareup.dagger:dagger-compiler:1.2.2'
+    compile 'com.google.dagger:dagger:2.7'
+    annotationProcessor 'com.google.dagger:dagger-compiler:2.7'
 
     testCompile 'junit:junit:4.12'
     testCompile 'org.mockito:mockito-core:1.10.19'

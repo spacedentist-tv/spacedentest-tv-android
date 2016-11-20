@@ -1,7 +1,9 @@
 package tv.spacedentist.android.view;
 
 import android.support.annotation.IdRes;
-import android.support.annotation.LayoutRes;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import tv.spacedentist.android.R;
 
@@ -19,7 +21,11 @@ public enum SDButton {
     BUTTON_EIGHT(R.id.button_eight, "8"),
     BUTTON_NINE(R.id.button_nine, "9"),
     BUTTON_ZERO(R.id.button_zero, "0"),
-    BUTTON_TEXT(R.id.button_text, "cycle");
+    BUTTON_TRUFAX(R.id.button_trufax, "cycle");
+
+    private static final String SDTV_MSG_KEY = "sdtv_msg";
+    private static final String SDTV_REMOTE_CONTROL_KEY = "rc";
+    private static final String SDTV_KEY_KEY = "key";
 
     private final int mResId;
     private final String mKey;
@@ -44,6 +50,13 @@ public enum SDButton {
             }
         }
 
-        return null;
+        throw new IllegalStateException("resource id didn't match up with a button");
+    }
+
+    public String getMessage() throws JSONException {
+        final JSONObject message = new JSONObject();
+        message.put(SDTV_MSG_KEY, SDTV_REMOTE_CONTROL_KEY);
+        message.put(SDTV_KEY_KEY, getKey());
+        return message.toString();
     }
 }

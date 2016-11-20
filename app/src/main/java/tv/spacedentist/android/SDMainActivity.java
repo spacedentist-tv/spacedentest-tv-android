@@ -6,16 +6,11 @@ import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.app.MediaRouteActionProvider;
-import android.support.v7.media.MediaRouter;
-import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
-
-import com.google.common.base.Optional;
 
 import java.util.Locale;
 
@@ -23,7 +18,6 @@ import javax.inject.Inject;
 
 import tv.spacedentist.android.chromecast.SDChromecastManager;
 import tv.spacedentist.android.chromecast.SDChromecastManagerListener;
-import tv.spacedentist.android.chromecast.SDMediaRouterCallback;
 import tv.spacedentist.android.util.SDLogger;
 import tv.spacedentist.android.view.SDButton;
 import tv.spacedentist.android.view.SDButtonClickSender;
@@ -34,21 +28,19 @@ import tv.spacedentist.android.view.SDButtonClickSender;
  */
 public class SDMainActivity extends AppCompatActivity implements SDChromecastManagerListener {
 
-    private static final String TAG = SDMainActivity.class.getSimpleName();
+    private static final String TAG = "SDMainActivity";
 
+    @Inject SDNotificationManager mNotificationManager;
     @Inject SDChromecastManager mChromecastManager;
     @Inject SDLogger mLogger;
-    private MediaRouter.Callback mMediaRouterCallback;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
         setContentView(R.layout.activity_main);
+        ((SDApplication) getApplication()).getComponent().inject(this);
 
-        ((SDApplication) getApplication()).injectMembers(this);
-
-        mMediaRouterCallback = new SDMediaRouterCallback(mChromecastManager);
+        mLogger.d(TAG, "onCreate()");
 
         mChromecastManager.addListener(this);
 
@@ -56,18 +48,15 @@ public class SDMainActivity extends AppCompatActivity implements SDChromecastMan
         if (actionBar != null) {
             actionBar.setDisplayShowCustomEnabled(true);
             actionBar.setDisplayShowTitleEnabled(false);
-
-            LayoutInflater inflater = LayoutInflater.from(this);
-            View titleView = inflater.inflate(R.layout.action_bar_title, null);
-            actionBar.setCustomView(titleView);
+            actionBar.setCustomView(R.layout.action_bar_title);
         }
 
         final SDButtonClickSender buttonClickSender = new SDButtonClickSender(mChromecastManager);
 
         for (SDButton button : SDButton.values()) {
-            final Optional<View> buttonView = findOptionalViewById(button.getResId());
-            if (buttonView.isPresent()) {
-                buttonView.get().setOnClickListener(buttonClickSender);
+            final View buttonView = findViewById(button.getResId());
+            if (buttonView != null) {
+                buttonView.setOnClickListener(buttonClickSender);
             }
         }
     }
@@ -76,28 +65,39 @@ public class SDMainActivity extends AppCompatActivity implements SDChromecastMan
     protected void onDestroy() {
         super.onDestroy();
 
+        mLogger.d(TAG, "onDestroy()");
+
         mChromecastManager.removeListener(this);
     }
 
     @Override
     public void onResume() {
         super.onResume();
-        Log.d(TAG, "onResume()");
+        mLogger.d(TAG, "onResume()");
         showCorrectView();
         setDisconnectedText();
+
+        mNotificationManager.setActivityOpen(true);
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        mLogger.d(TAG, "onPause()");
+
+        mNotificationManager.setActivityOpen(false);
     }
 
     @Override
     public void onStart() {
         super.onStart();
-        Log.d(TAG, "onStart()");
-        mChromecastManager.addMediaRouterCallback(mMediaRouterCallback);
+        mLogger.d(TAG, "onStart() route available: " + mChromecastManager.isRouteAvailable());
+
     }
 
     @Override
     public void onStop() {
-        Log.d(TAG, "onStop");
-        mChromecastManager.removeMediaRouterCallback(mMediaRouterCallback);
+        mLogger.d(TAG, "onStop");
         super.onStop();
     }
 
@@ -130,10 +130,10 @@ public class SDMainActivity extends AppCompatActivity implements SDChromecastMan
     }
 
     private void setDisconnectedText() {
-        final Optional<TextView> disconnectedView = findOptionalViewById(R.id.disconnected);
+        final TextView disconnectedView = (TextView) findViewById(R.id.disconnected);
 
-        if (disconnectedView.isPresent()) {
-            disconnectedView.get()
+        if (disconnectedView != null) {
+            disconnectedView
                     .setText((mChromecastManager.isRouteAvailable()) ?
                             R.string.disconnected_text:
                             R.string.no_chromecast_text);
@@ -141,22 +141,22 @@ public class SDMainActivity extends AppCompatActivity implements SDChromecastMan
     }
 
     private void showCorrectView() {
-        final Optional<View> connectingSpinnerView = findOptionalViewById(R.id.connecting_spinner);
-        final Optional<View> disconnectedView = findOptionalViewById(R.id.disconnected);
-        final Optional<View> connectedView = findOptionalViewById(R.id.connected);
+        final View connectingSpinnerView = findViewById(R.id.connecting_spinner);
+        final View disconnectedView = findViewById(R.id.disconnected);
+        final View connectedView = findViewById(R.id.connected);
 
         final boolean connecting = mChromecastManager.isConnecting();
         final boolean connected = mChromecastManager.isConnected();
 
-        if (connectingSpinnerView.isPresent()) {
-            connectingSpinnerView.get()
+        if (connectingSpinnerView != null) {
+            connectingSpinnerView
                     .setVisibility(connecting ?
                             View.VISIBLE:
                             View.GONE);
         }
 
-        if (disconnectedView.isPresent()) {
-            disconnectedView.get()
+        if (disconnectedView != null) {
+            disconnectedView
                     .setVisibility(connecting ?
                             View.GONE:
                             connected ?
@@ -164,23 +164,13 @@ public class SDMainActivity extends AppCompatActivity implements SDChromecastMan
                                     View.VISIBLE);
         }
 
-        if (connectedView.isPresent()) {
-            connectedView.get()
+        if (connectedView != null) {
+            connectedView
                     .setVisibility(connecting ?
                             View.GONE :
                             connected ?
                                     View.VISIBLE:
                                     View.GONE);
-        }
-    }
-
-    @SuppressWarnings("unchecked")
-    <T extends View> Optional<T> findOptionalViewById(@IdRes int id) {
-        try {
-            return Optional.fromNullable((T) findViewById(id));
-        } catch (ClassCastException e) {
-            mLogger.e(TAG, "unable to cast view", e);
-            return Optional.absent();
         }
     }
 }

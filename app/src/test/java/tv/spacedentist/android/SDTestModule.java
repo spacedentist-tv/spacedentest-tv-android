@@ -5,53 +5,44 @@ import com.google.android.gms.cast.Cast;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
-import javax.inject.Singleton;
-
-import dagger.Module;
-import dagger.Provides;
-import tv.spacedentist.android.chromecast.SDChromecastManagerTestCase;
 import tv.spacedentist.android.chromecast.SDMediaRouteSelector;
 import tv.spacedentist.android.chromecast.SDMediaRouter;
 import tv.spacedentist.android.util.SDLogger;
 
-@Module(
-        injects = {
-                SDChromecastManagerTestCase.class
-        },
-        includes = {
-                SDModule.class
-        },
-        overrides = true,
-        library = true)
-public class SDTestModule {
+public class SDTestModule extends SDModule {
     private static final SDLogger mLogger = SDLogger.JAVA_LOGGER;
     @Mock private Cast.CastApi mCastApi;
     @Mock private SDMediaRouter mMediaRouter;
     @Mock private SDMediaRouteSelector mMediaRouteSelector;
+    @Mock private SDNotificationManager mNotificationManager;
 
     public SDTestModule() {
+        super(null);
         MockitoAnnotations.initMocks(this);
     }
 
-    @Provides
-    @Singleton
+    @Override
     Cast.CastApi provideCastApi() {
         return mCastApi;
     }
 
-    @Provides
-    @Singleton
+    @Override
     SDLogger provideLogger() {
         return mLogger;
     }
 
-    @Provides
+    @Override
     SDMediaRouter provideMediaRouter() {
         return mMediaRouter;
     }
 
-    @Provides
+    @Override
     SDMediaRouteSelector provideMediaRouteSelector() {
         return mMediaRouteSelector;
+    }
+
+    @Override
+    SDNotificationManager provideNotificationManager() {
+        return mNotificationManager;
     }
 }
