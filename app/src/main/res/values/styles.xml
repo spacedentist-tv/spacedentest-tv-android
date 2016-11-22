@@ -8,6 +8,10 @@
         <item name="android:progressBarStyle">@style/SDProgressBar</item>
         <item name="android:windowBackground">@drawable/sd_background_splash</item>
 
+        <item tools:targetApi="21" name="android:windowActivityTransitions">true</item>
+        <item tools:targetApi="21" name="android:windowEnterTransition">@android:transition/fade</item>
+        <item tools:targetApi="21" name="android:windowExitTransition">@android:transition/fade</item>
+
         <!-- Support library compatibility -->
         <item name="windowActionBarOverlay">true</item>
         <item name="actionBarStyle">@style/SDActionBar</item>

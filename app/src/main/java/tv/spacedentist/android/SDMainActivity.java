@@ -2,6 +2,8 @@ package tv.spacedentist.android;
 
 import android.os.Bundle;
 import android.support.annotation.IdRes;
+import android.support.transition.Scene;
+import android.support.transition.TransitionManager;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
@@ -10,7 +12,7 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.TextView;
+import android.view.ViewGroup;
 
 import java.util.Locale;
 
@@ -34,6 +36,13 @@ public class SDMainActivity extends AppCompatActivity implements SDChromecastMan
     @Inject SDChromecastManager mChromecastManager;
     @Inject SDLogger mLogger;
 
+    private Scene mDisconnectedScene;
+    private Scene mChromecastScene;
+    private Scene mConnectingScene;
+    private Scene mConnectedScene;
+
+    private Scene mCurrentScene;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -51,14 +60,32 @@ public class SDMainActivity extends AppCompatActivity implements SDChromecastMan
             actionBar.setCustomView(R.layout.action_bar_title);
         }
 
-        final SDButtonClickSender buttonClickSender = new SDButtonClickSender(mChromecastManager);
+        final ViewGroup sceneRoot = (ViewGroup) findViewById(R.id.scene_root);
 
-        for (SDButton button : SDButton.values()) {
-            final View buttonView = findViewById(button.getResId());
-            if (buttonView != null) {
-                buttonView.setOnClickListener(buttonClickSender);
+        // add the button click listeners
+        final SDButtonClickSender buttonClickSender = new SDButtonClickSender(mChromecastManager);
+        sceneRoot.setOnHierarchyChangeListener(new ViewGroup.OnHierarchyChangeListener() {
+            @Override
+            public void onChildViewAdded(View parent, View child) {
+                // if we're adding the keypad attach the key listeners
+                if (child.getId() == R.id.connected) {
+                    for (SDButton button : SDButton.values()) {
+                        final View buttonView = findViewById(button.getResId());
+                        if (buttonView != null) {
+                            buttonView.setOnClickListener(buttonClickSender);
+                        }
+                    }
+                }
             }
-        }
+
+            @Override
+            public void onChildViewRemoved(View parent, View child) {}
+        });
+
+        mDisconnectedScene = Scene.getSceneForLayout(sceneRoot, R.layout.scene_no_chromecast, this);
+        mChromecastScene = Scene.getSceneForLayout(sceneRoot, R.layout.scene_chromecast, this);
+        mConnectingScene = Scene.getSceneForLayout(sceneRoot, R.layout.scene_connecting, this);
+        mConnectedScene = Scene.getSceneForLayout(sceneRoot, R.layout.scene_connected, this);
     }
 
     @Override
@@ -75,7 +102,6 @@ public class SDMainActivity extends AppCompatActivity implements SDChromecastMan
         super.onResume();
         mLogger.d(TAG, "onResume()");
         showCorrectView();
-        setDisconnectedText();
 
         mNotificationManager.setActivityOpen(true);
     }
@@ -125,52 +151,29 @@ public class SDMainActivity extends AppCompatActivity implements SDChromecastMan
 
     @Override
     public void onConnectionStateChanged() {
-        setDisconnectedText();
         showCorrectView();
     }
 
-    private void setDisconnectedText() {
-        final TextView disconnectedView = (TextView) findViewById(R.id.disconnected);
-
-        if (disconnectedView != null) {
-            disconnectedView
-                    .setText((mChromecastManager.isRouteAvailable()) ?
-                            R.string.disconnected_text:
-                            R.string.no_chromecast_text);
-        }
-    }
-
     private void showCorrectView() {
-        final View connectingSpinnerView = findViewById(R.id.connecting_spinner);
-        final View disconnectedView = findViewById(R.id.disconnected);
-        final View connectedView = findViewById(R.id.connected);
-
         final boolean connecting = mChromecastManager.isConnecting();
         final boolean connected = mChromecastManager.isConnected();
 
-        if (connectingSpinnerView != null) {
-            connectingSpinnerView
-                    .setVisibility(connecting ?
-                            View.VISIBLE:
-                            View.GONE);
+        final Scene newScene;
+
+        if (connecting) {
+            newScene = mConnectingScene;
+        } else if (connected) {
+            newScene = mConnectedScene;
+        } else {
+            newScene =
+                    mChromecastManager.isRouteAvailable() ?
+                            mChromecastScene :
+                            mDisconnectedScene;
         }
 
-        if (disconnectedView != null) {
-            disconnectedView
-                    .setVisibility(connecting ?
-                            View.GONE:
-                            connected ?
-                                    View.GONE:
-                                    View.VISIBLE);
-        }
-
-        if (connectedView != null) {
-            connectedView
-                    .setVisibility(connecting ?
-                            View.GONE :
-                            connected ?
-                                    View.VISIBLE:
-                                    View.GONE);
+        if (!newScene.equals(mCurrentScene)) {
+            mCurrentScene = newScene;
+            TransitionManager.go(mCurrentScene);
         }
     }
 }
