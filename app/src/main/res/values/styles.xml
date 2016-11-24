@@ -6,7 +6,6 @@
         <item tools:targetApi="11" name="android:actionBarStyle">@style/SDActionBar</item>
         <item name="android:imageButtonStyle">@style/SDButton</item>
         <item name="android:progressBarStyle">@style/SDProgressBar</item>
-        <item name="android:windowBackground">@drawable/sd_background_splash</item>
 
         <item tools:targetApi="21" name="android:windowActivityTransitions">true</item>
         <item tools:targetApi="21" name="android:windowEnterTransition">@android:transition/fade</item>
