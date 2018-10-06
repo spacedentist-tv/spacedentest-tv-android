@@ -6,3 +6,4 @@
 *.iml
 keystore.properties
 releasekey.jks
+.settings

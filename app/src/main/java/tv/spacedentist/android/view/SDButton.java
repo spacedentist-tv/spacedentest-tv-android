@@ -1,10 +1,9 @@
 package tv.spacedentist.android.view;
 
-import android.support.annotation.IdRes;
-
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import androidx.annotation.IdRes;
 import tv.spacedentist.android.R;
 
 /**

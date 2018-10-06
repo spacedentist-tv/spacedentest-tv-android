@@ -4,12 +4,13 @@ import android.content.Context;
 import android.graphics.Typeface;
 import android.util.AttributeSet;
 import android.util.Log;
-import android.widget.TextView;
+
+import androidx.appcompat.widget.AppCompatTextView;
 
 /**
  * A custom text view so that we can set the font
  */
-public class SDTextView extends TextView {
+public class SDTextView extends AppCompatTextView {
     private static final String TAG = SDTextView.class.getSimpleName();
 
     public SDTextView(Context context, AttributeSet attr) {

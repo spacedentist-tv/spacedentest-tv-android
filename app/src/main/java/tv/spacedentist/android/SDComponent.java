@@ -1,6 +1,6 @@
 package tv.spacedentist.android;
 
-import com.google.android.gms.cast.Cast;
+import com.google.android.gms.cast.framework.CastContext;
 
 import javax.inject.Singleton;
 
@@ -13,7 +13,7 @@ import tv.spacedentist.android.util.SDLogger;
 public interface SDComponent {
     SDLogger getLogger();
     SDChromecastManager getChromecastManager();
-    Cast.CastApi getCastApi();
+    CastContext getCastContext();
 
     void inject(SDMainActivity mainActivity);
     void inject(SDChromecastManager chromecastManager);

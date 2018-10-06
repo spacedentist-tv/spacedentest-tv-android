@@ -1,16 +1,17 @@
 buildscript {
     repositories {
+        google()
         jcenter()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:2.2.2'
+        classpath 'com.android.tools.build:gradle:3.2.0'
         classpath 'com.dicedmelon.gradle:jacoco-android:0.1.1'
-        classpath 'com.google.guava:guava:19.0'
     }
 }
 
 allprojects {
     repositories {
+        google()
         jcenter()
     }
 }
