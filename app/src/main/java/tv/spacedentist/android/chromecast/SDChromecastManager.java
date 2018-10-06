@@ -1,26 +1,18 @@
 package tv.spacedentist.android.chromecast;
 
-import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.support.annotation.VisibleForTesting;
-import android.support.v7.app.MediaRouteActionProvider;
-import android.support.v7.media.MediaRouter;
-
-import com.google.android.gms.cast.Cast;
 import com.google.android.gms.cast.CastDevice;
-import com.google.android.gms.cast.LaunchOptions;
-import com.google.android.gms.common.ConnectionResult;
-import com.google.android.gms.common.api.GoogleApiClient;
-import com.google.android.gms.common.api.ResultCallback;
+import com.google.android.gms.cast.framework.CastContext;
+import com.google.android.gms.cast.framework.CastSession;
+import com.google.android.gms.cast.framework.CastStateListener;
+import com.google.android.gms.cast.framework.SessionManagerListener;
 import com.google.android.gms.common.api.Status;
 
-import java.io.IOException;
 import java.util.HashSet;
 import java.util.Set;
 
 import javax.inject.Inject;
 
+import androidx.annotation.Nullable;
 import tv.spacedentist.android.BuildConfig;
 import tv.spacedentist.android.SDComponent;
 import tv.spacedentist.android.util.SDLogger;
@@ -28,241 +20,82 @@ import tv.spacedentist.android.util.SDLogger;
 /**
  * This is where most of the Chormecast logic happens
  */
-public class SDChromecastManager implements
-        SDCastListener.Callback,
-        GoogleApiClient.ConnectionCallbacks,
-        GoogleApiClient.OnConnectionFailedListener,
-        Cast.MessageReceivedCallback {
+public class SDChromecastManager implements CastStateListener {
 
-    private static final String TAG = SDChromecastManager.class.getSimpleName();
-    private static final Set<SDChromecastManagerListener> mListeners = new HashSet<>();
+    private static final String TAG = "SDChromecastManager";
 
-    @Inject SDMediaRouter mMediaRouter;
-    @Inject SDMediaRouteSelector mMediaRouteSelector;
-    @Inject SDApiClientCreator mApiClientCreator;
+    private final Set<CastStateListener> mListeners = new HashSet<>();
+    private final SessionManagerListener<CastSession> mSessionManagerListener;
+
     @Inject SDLogger mLogger;
-    @Inject Cast.CastApi CAST_API;
-
-    private GoogleApiClient mApiClient;
-
-    private CastDevice mSelectedDevice;
-    private String mSessionId;
-    private String mStatus;
-
-    private boolean mWaitingForReconnect = false;
+    @Inject CastContext mCastContext;
 
     public SDChromecastManager(SDComponent component) {
         component.inject(this);
 
-        mMediaRouter.addCallback(
-                mMediaRouteSelector,
-                new MediaRouter.Callback() {
-                    @Override
-                    public void onRouteSelected(MediaRouter router, MediaRouter.RouteInfo routeInfo) {
-                        connect(routeInfo);
-                    }
-
-                    @Override
-                    public void onRouteUnselected(MediaRouter router, MediaRouter.RouteInfo info) {
-                        tearDown();
-                    }
-
-                    @Override
-                    public void onRouteAdded(MediaRouter router, MediaRouter.RouteInfo route) {
-                        broadcastConnectionStateChange();
-                    }
-
-                    @Override
-                    public void onRouteRemoved(MediaRouter router, MediaRouter.RouteInfo route) {
-                        broadcastConnectionStateChange();
-                    }
-
-                    @Override
-                    public void onRouteChanged(MediaRouter router, MediaRouter.RouteInfo route) {
-                        broadcastConnectionStateChange();
-                    }
-                },
-                MediaRouter.CALLBACK_FLAG_REQUEST_DISCOVERY);
+        mSessionManagerListener = new SDSessionManagerListener(mLogger);
     }
 
-    public void addListener(SDChromecastManagerListener listener) {
+    public void addCastStateListener(CastStateListener listener) {
         mListeners.add(listener);
     }
 
-    public void removeListener(SDChromecastManagerListener listener) {
+    public void removeCastStateListener(CastStateListener listener) {
         mListeners.remove(listener);
     }
 
-    protected void broadcastConnectionStateChange() {
-        for (SDChromecastManagerListener listener : mListeners) {
-            listener.onConnectionStateChanged();
-        }
-    }
-
-    public void setMediaRouteActionProvider(MediaRouteActionProvider mediaRouteActionProvider) {
-        mediaRouteActionProvider.setRouteSelector(mMediaRouteSelector.get());
-    }
-
-    private ResultCallback<Cast.ApplicationConnectionResult> LAUNCH_APPLICATION_CALLBACK = new ResultCallback<Cast.ApplicationConnectionResult>() {
-        @Override
-        public void onResult(@NonNull Cast.ApplicationConnectionResult result) {
-            Status status = result.getStatus();
-            mLogger.d(TAG, "launch application result: " + status);
-
-            if (status.isSuccess()) {
-                mSessionId = result.getSessionId();
-                mStatus = result.getApplicationStatus();
-                mLogger.d(TAG, String.format("launch success %s %s", mSessionId, mStatus));
-                broadcastConnectionStateChange();
-                connectChannel();
-            } else {
-                mLogger.d(TAG, "launch failed");
-                tearDown();
-            }
-        }
-    };
-
-    public void launch() {
-        if (mApiClient != null) {
-            try {
-                final LaunchOptions launchOptions = new LaunchOptions.Builder().build();
-                CAST_API.launchApplication(mApiClient, BuildConfig.CHROMECAST_APP_ID, launchOptions).setResultCallback(LAUNCH_APPLICATION_CALLBACK);
-            } catch (Exception e) {
-                mLogger.e(TAG, "Failed to launch application", e);
-            }
-        }
-    }
-
-    protected void connect(MediaRouter.RouteInfo routeInfo) {
-        mSelectedDevice = CastDevice.getFromBundle(routeInfo.getExtras());
-        if (mSelectedDevice != null) {
-            Cast.CastOptions apiOptionsBuilder = new Cast.CastOptions.Builder(mSelectedDevice, new SDCastListener(this)).build();
-            mApiClient = mApiClientCreator.get(apiOptionsBuilder, this, this);
-            mApiClient.connect();
-            broadcastConnectionStateChange();
-        }
-    }
-
     @Override
-    public void onApplicationStatusChanged() {
-        if (mApiClient != null) {
-            mStatus = CAST_API.getApplicationStatus(mApiClient);
-            mLogger.d(TAG, "onApplicationStatusChanged: " + mStatus);
-
-            broadcastConnectionStateChange();
+    public void onCastStateChanged(int state) {
+        mLogger.i(TAG, "onCastStateChanged: " + state);
+        for (CastStateListener listener : mListeners) {
+            listener.onCastStateChanged(state);
         }
-    }
-
-    @Override
-    public void onVolumeChanged() {
-        if (mApiClient != null) {
-            mLogger.d(TAG, "onVolumeChanged: " + CAST_API.getVolume(mApiClient));
-        }
-    }
-
-    @Override
-    public void onApplicationDisconnected(int errorCode) {
-        tearDown();
-    }
-
-    @VisibleForTesting
-    void setApiClient(@Nullable GoogleApiClient apiClient) {
-        mApiClient = apiClient;
-    }
-
-    public boolean isConnecting() {
-        return mApiClient != null && mApiClient.isConnecting();
-    }
-
-    public boolean isConnected() {
-        return mApiClient != null && mApiClient.isConnected();
-    }
-
-    @Override
-    public void onConnected(Bundle connectionHint) {
-        mLogger.d(TAG, "onConnected");
-
-        if (mWaitingForReconnect) {
-            mWaitingForReconnect = false;
-            connectChannel();
-        } else {
-            launch();
-        }
-    }
-
-    private void connectChannel() {
-        if (mApiClient != null) {
-            try {
-                CAST_API.setMessageReceivedCallbacks(mApiClient, BuildConfig.CHROMECAST_APP_NAMESPACE, this);
-            } catch (IOException e) {
-                mLogger.e(TAG, "Exception while creating channel", e);
-            }
-        }
-    }
-
-    @Override
-    public void onConnectionSuspended(int cause) {
-        mLogger.d(TAG, "onConnectionSuspended: " + cause);
-        mWaitingForReconnect = true;
-    }
-
-    @Override
-    public void onConnectionFailed(@NonNull ConnectionResult result) {
-        mLogger.d(TAG, "onConnectionFailed: " + result);
-        tearDown();
-    }
-
-    @Override
-    public void onMessageReceived(CastDevice castDevice, String namespace, String message) {
-        mLogger.d(TAG, "onMessageReceived: " + message);
-    }
-
-    public void tearDown() {
-        mLogger.d(TAG, "teardown");
-        if (mApiClient != null) {
-            if (mApiClient.isConnected() && mSessionId != null) {
-                CAST_API.stopApplication(mApiClient, mSessionId);
-            }
-
-            if (mApiClient.isConnected() || mApiClient.isConnecting()) {
-                try {
-                    CAST_API.removeMessageReceivedCallbacks(
-                            mApiClient,
-                            BuildConfig.CHROMECAST_APP_NAMESPACE);
-                } catch (IOException e) {
-                    mLogger.e(TAG, "Exception while removing channel", e);
-                }
-                mApiClient.disconnect();
-            }
-            mApiClient = null;
-        }
-        mSelectedDevice = null;
-        mWaitingForReconnect = false;
-        mSessionId = null;
-
-        mMediaRouter.selectRoute(mMediaRouter.getDefaultRoute());
-
-        broadcastConnectionStateChange();
-    }
-
-    public boolean isRouteAvailable() {
-        return mMediaRouter.isRouteAvailable(mMediaRouteSelector, MediaRouter.AVAILABILITY_FLAG_IGNORE_DEFAULT_ROUTE);
     }
 
     public @Nullable String getSelectedDeviceFriendlyName() {
-        return mSelectedDevice == null ? null : mSelectedDevice.getFriendlyName();
+        return mCastContext.getSessionManager().getCurrentCastSession().getCastDevice().getFriendlyName();
     }
 
-    private ResultCallback<Status> SEND_MESSAGE_CALLBACK = result -> {
-        if (!result.isSuccess()) {
+    private void onMessageResult(Status status) {
+        if (!status.isSuccess()) {
             mLogger.e(TAG, "Sending message failed");
         }
     };
 
     public void sendChromecastMessage(String message) {
-        if (mApiClient != null) {
-            CAST_API.sendMessage(mApiClient, BuildConfig.CHROMECAST_APP_NAMESPACE, message)
-                    .setResultCallback(SEND_MESSAGE_CALLBACK);
+        mLogger.i(TAG, "sending message: '" + message + "' state: " + mCastContext.getCastState());
+
+        CastSession castSession = mCastContext.getSessionManager().getCurrentCastSession();
+
+        if (castSession != null) {
+            mLogger.i(TAG, "there's a session");
+            castSession
+                    .sendMessage(BuildConfig.CHROMECAST_APP_NAMESPACE, message)
+                    .setResultCallback(this::onMessageResult);
+        } else {
+            mLogger.i(TAG, "no current session");
         }
+    }
+
+    public void onResume() {
+        mCastContext.getSessionManager().addSessionManagerListener(mSessionManagerListener, CastSession.class);
+        mCastContext.addCastStateListener(this);
+    }
+
+    public void onPause() {
+        mCastContext.getSessionManager().addSessionManagerListener(mSessionManagerListener, CastSession.class);
+        mCastContext.removeCastStateListener(this);
+    }
+
+    public void endCurrentSession() {
+        mCastContext.getSessionManager().endCurrentSession(true);
+    }
+
+    public CastDevice getCastDevice() {
+        return mCastContext.getSessionManager().getCurrentCastSession().getCastDevice();
+    }
+
+    public int getCurrentCastState() {
+        return mCastContext.getCastState();
     }
 }

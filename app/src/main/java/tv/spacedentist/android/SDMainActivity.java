@@ -1,25 +1,26 @@
 package tv.spacedentist.android;
 
 import android.os.Bundle;
-import android.support.annotation.IdRes;
-import android.support.transition.Scene;
-import android.support.transition.TransitionManager;
-import android.support.v4.view.MenuItemCompat;
-import android.support.v7.app.ActionBar;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.app.MediaRouteActionProvider;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.google.android.gms.cast.framework.CastButtonFactory;
+import com.google.android.gms.cast.framework.CastState;
+import com.google.android.gms.cast.framework.CastStateListener;
+
 import java.util.Locale;
 
 import javax.inject.Inject;
 
+import androidx.annotation.IdRes;
+import androidx.appcompat.app.ActionBar;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.transition.Scene;
+import androidx.transition.TransitionManager;
 import tv.spacedentist.android.chromecast.SDChromecastManager;
-import tv.spacedentist.android.chromecast.SDChromecastManagerListener;
 import tv.spacedentist.android.util.SDLogger;
 import tv.spacedentist.android.view.SDButton;
 import tv.spacedentist.android.view.SDButtonClickSender;
@@ -28,7 +29,7 @@ import tv.spacedentist.android.view.SDButtonClickSender;
  * The activity class that does everything. Luckily there's not that much to do, but would be nice
  * to refactor and make more testable.
  */
-public class SDMainActivity extends AppCompatActivity implements SDChromecastManagerListener {
+public class SDMainActivity extends AppCompatActivity implements CastStateListener {
 
     private static final String TAG = "SDMainActivity";
 
@@ -51,7 +52,7 @@ public class SDMainActivity extends AppCompatActivity implements SDChromecastMan
 
         mLogger.d(TAG, "onCreate()");
 
-        mChromecastManager.addListener(this);
+        mChromecastManager.addCastStateListener(this);
 
         final ActionBar actionBar = getSupportActionBar();
         if (actionBar != null) {
@@ -60,7 +61,7 @@ public class SDMainActivity extends AppCompatActivity implements SDChromecastMan
             actionBar.setCustomView(R.layout.action_bar_title);
         }
 
-        final ViewGroup sceneRoot = (ViewGroup) findViewById(R.id.scene_root);
+        final ViewGroup sceneRoot = findViewById(R.id.scene_root);
 
         // add the button click listeners
         final SDButtonClickSender buttonClickSender = new SDButtonClickSender(mChromecastManager);
@@ -94,30 +95,29 @@ public class SDMainActivity extends AppCompatActivity implements SDChromecastMan
 
         mLogger.d(TAG, "onDestroy()");
 
-        mChromecastManager.removeListener(this);
+        mChromecastManager.removeCastStateListener(this);
     }
 
     @Override
     public void onResume() {
         super.onResume();
         mLogger.d(TAG, "onResume()");
-        showCorrectView();
-
         mNotificationManager.setActivityOpen(true);
+        showCorrectView(mChromecastManager.getCurrentCastState());
+        mChromecastManager.onResume();
     }
 
     @Override
     protected void onPause() {
         super.onPause();
         mLogger.d(TAG, "onPause()");
-
         mNotificationManager.setActivityOpen(false);
+        mChromecastManager.onPause();
     }
 
     @Override
     public void onStart() {
         super.onStart();
-        mLogger.d(TAG, "onStart() route available: " + mChromecastManager.isRouteAvailable());
 
     }
 
@@ -137,9 +137,7 @@ public class SDMainActivity extends AppCompatActivity implements SDChromecastMan
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.menu_main, menu);
-        MenuItem mediaRouteMenuItem = menu.findItem(R.id.media_route_menu_item);
-        MediaRouteActionProvider mediaRouteActionProvider = (MediaRouteActionProvider) MenuItemCompat.getActionProvider(mediaRouteMenuItem);
-        mChromecastManager.setMediaRouteActionProvider(mediaRouteActionProvider);
+        CastButtonFactory.setUpMediaRouteButton(getApplicationContext(), menu, R.id.media_route_menu_item);
 
         setMenuItem(menu, R.id.app_id, BuildConfig.APPLICATION_ID, BuildConfig.DEBUG);
         setMenuItem(menu, R.id.app_flavor, BuildConfig.FLAVOR, BuildConfig.DEBUG);
@@ -150,26 +148,18 @@ public class SDMainActivity extends AppCompatActivity implements SDChromecastMan
     }
 
     @Override
-    public void onConnectionStateChanged() {
-        showCorrectView();
+    public void onCastStateChanged(int state) {
+        showCorrectView(state);
     }
 
-    private void showCorrectView() {
-        final boolean connecting = mChromecastManager.isConnecting();
-        final boolean connected = mChromecastManager.isConnected();
-
-        final Scene newScene;
-
-        if (connecting) {
-            newScene = mConnectingScene;
-        } else if (connected) {
-            newScene = mConnectedScene;
-        } else {
-            newScene =
-                    mChromecastManager.isRouteAvailable() ?
-                            mChromecastScene :
-                            mDisconnectedScene;
-        }
+    private void showCorrectView(int state) {
+        final Scene newScene = state == CastState.CONNECTING ?
+                mConnectingScene :
+                        state == CastState.CONNECTED ?
+                                mConnectedScene :
+                                state != CastState.NO_DEVICES_AVAILABLE ?
+                                        mChromecastScene :
+                                        mDisconnectedScene;
 
         if (!newScene.equals(mCurrentScene)) {
             mCurrentScene = newScene;

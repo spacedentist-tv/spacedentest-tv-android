@@ -15,8 +15,10 @@
     <string name="notification_content_text_format">Connected to %1$s</string>
     <string name="notification_action_text_stop">stop</string>
     <string name="notification_action_text_trufax">trufax</string>
-    <string translatable="false" name="notification_intent_action_stop">tv.spacedentist.ACTION_STOP</string>
-    <string translatable="false" name="notification_intent_action_trufax">tv.spacedentist.ACTION_TRUFAX</string>
+    <string name="notification_channel_name">Now casting</string>
+    <string name="notification_channel_description">Now casting controls when away from app</string>
+    <string translatable="false" name="notification_intent_action_stop">%1$s.ACTION_STOP</string>
+    <string translatable="false" name="notification_intent_action_trufax">%1$s.ACTION_TRUFAX</string>
 
     <!-- text for the keypad -->
     <string name="keypad_one">1</string>

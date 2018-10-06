@@ -4,12 +4,13 @@ import android.content.Context;
 import android.graphics.Typeface;
 import android.util.AttributeSet;
 import android.util.Log;
-import android.widget.Button;
+
+import androidx.appcompat.widget.AppCompatButton;
 
 /**
  * A custom Button so we can set the font
  */
-public class SDButtonView extends Button {
+public class SDButtonView extends AppCompatButton {
     private static final String TAG = SDButtonView.class.getSimpleName();
 
     public SDButtonView(Context context, AttributeSet attrs) {

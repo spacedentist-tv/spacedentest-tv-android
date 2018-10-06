@@ -25,14 +25,18 @@
         <receiver android:name=".SDNotificationReceiver"
             android:exported="false">
             <intent-filter>
-                <action android:name="tv.spacedentist.ACTION_STOP" />
-                <action android:name="tv.spacedentist.ACTION_TRUFAX" />
+                <action android:name="${applicationId}.ACTION_STOP" />
+                <action android:name="${applicationId}.ACTION_TRUFAX" />
             </intent-filter>
         </receiver>
 
         <meta-data
             android:name="com.google.android.gms.version"
             android:value="@integer/google_play_services_version" />
+
+        <meta-data
+            android:name="com.google.android.gms.cast.framework.OPTIONS_PROVIDER_CLASS_NAME"
+            android:value="tv.spacedentist.android.chromecast.SDCastOptionsProvider" />
     </application>
 
 </manifest>
