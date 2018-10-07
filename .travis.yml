@@ -1,6 +1,6 @@
 language: android
 jdk:
-  - oraclejdk8
+- oraclejdk8
 android:
   components:
   - tools
@@ -11,27 +11,27 @@ android:
   - android-28
   - sys-img-armeabi-v7a-android-22
 before_cache:
-  - rm -f  $HOME/.gradle/caches/modules-2/modules-2.lock
-  - rm -fr $HOME/.gradle/caches/*/plugin-resolution/
+- rm -f  $HOME/.gradle/caches/modules-2/modules-2.lock
+- rm -fr $HOME/.gradle/caches/*/plugin-resolution/
 cache:
   directories:
-  - $HOME/.gradle/caches/
-  - $HOME/.gradle/wrapper/
-  - $HOME/.ivy2
-  - $HOME/.m2
+  - "$HOME/.gradle/caches/"
+  - "$HOME/.gradle/wrapper/"
+  - "$HOME/.ivy2"
+  - "$HOME/.m2"
 before_script:
-  - android list targets
-  - echo no | android create avd --force -n test -t android-22
-  - emulator -avd test -no-audio -no-window &
-  - android-wait-for-emulator
-  - adb shell input keyevent 82 &
+- android list targets
+- echo no | android create avd --force -n test -t android-22
+- emulator -avd test -no-audio -no-window &
+- android-wait-for-emulator
+- adb shell input keyevent 82 &
 script:
-- ./gradlew clean lintProdRelease connectedProdDebugAndroidTest assembleProdRelease
+- "./gradlew clean lintProdRelease connectedProdDebugAndroidTest assembleProdRelease"
 deploy:
   provider: releases
   skip_cleanup: true
   api_key:
-    secure: KWBNMR7GfX0A5FxU9UPCku5oUjzz7SzfLgNwUcabN2OkOwFfLWwMHdT3fAVyIB0npRVANzGs6tQte5EUW1hv/vdmd0lCyn3pEsz6IVf8unMDlMMw5jnjoS1eR1km6YTDqzVf7Br4K8bFc+ACQNhslFrHAIPR0V3uRGYZXs4Vnw8=
+    secure: S1KaLgZdX8nnE6uvHnvVCdGxNMhKdkqpVY3zNCIB1tLeiHlo+tKG/1kNCXloqMNEM63M4LXG+UohJi0e2t6jE/6IQqEzEt4UqUWLikt4YVZB82L5GltUsbp21O9lv2KX0eKJ+cJsno9W+nDZCdYw+0iyFCQh2eitBYBHjknVpbw=
   file: app/build/outputs/apk/app-prod-release-$TRAVIS_TAG.$TRAVIS_BUILD_NUMBER.apk
   on:
     repo: spacedentist-tv/spacedentist-tv-android
