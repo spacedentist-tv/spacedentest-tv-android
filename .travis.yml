@@ -33,6 +33,7 @@ deploy:
   api_key:
     secure: S1KaLgZdX8nnE6uvHnvVCdGxNMhKdkqpVY3zNCIB1tLeiHlo+tKG/1kNCXloqMNEM63M4LXG+UohJi0e2t6jE/6IQqEzEt4UqUWLikt4YVZB82L5GltUsbp21O9lv2KX0eKJ+cJsno9W+nDZCdYw+0iyFCQh2eitBYBHjknVpbw=
   file: app/build/outputs/apk/prod/release/app-prod-release-$TRAVIS_TAG.$TRAVIS_BUILD_NUMBER.apk
+  file: app/build/outputs/mapping/prod/release/mapping.txt
   on:
     repo: spacedentist-tv/spacedentist-tv-android
     all_branches: true
