@@ -5,7 +5,6 @@
 
 # Dagger
 -dontwarn dagger.internal.codegen.**
--dontobfuscate
 
 -keep class **$$InjectAdapter** { *; }
 -keep class **$$ModuleAdapter** { *; }
