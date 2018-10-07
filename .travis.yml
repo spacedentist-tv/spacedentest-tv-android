@@ -6,10 +6,10 @@ android:
   - tools
   - platform-tools
   - tools
-  - build-tools-25.0.0
-  - android-25
-  - extra-google-m2repository
-  - extra-android-m2repository
+  - build-tools-28.0.2
+  - android-22
+  - android-28
+  - sys-img-armeabi-v7a-android-22
 before_cache:
   - rm -f  $HOME/.gradle/caches/modules-2/modules-2.lock
   - rm -fr $HOME/.gradle/caches/*/plugin-resolution/
@@ -19,8 +19,14 @@ cache:
   - $HOME/.gradle/wrapper/
   - $HOME/.ivy2
   - $HOME/.m2
+before_script:
+  - android list targets
+  - echo no | android create avd --force -n test -t android-22
+  - emulator -avd test -no-audio -no-window &
+  - android-wait-for-emulator
+  - adb shell input keyevent 82 &
 script:
-- ./gradlew clean lintProdRelease testProdReleaseUnitTest assembleProdRelease
+- ./gradlew clean lintProdRelease connectedProdDebugAndroidTest assembleProdRelease
 deploy:
   provider: releases
   skip_cleanup: true
