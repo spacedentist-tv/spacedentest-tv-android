@@ -93,10 +93,10 @@ open class SDNotificationManager(private val mContext: Context, component: SDCom
         return PendingIntent.getActivity(mContext, 0, contentIntent, 0)
     }
 
-    private fun createActionIntent(@StringRes actionId: Int, castDevice: CastDevice): PendingIntent {
+    private fun createActionIntent(@StringRes actionId: Int, castDevice: CastDevice?): PendingIntent {
         val contentIntent = Intent(mContext.getString(actionId, BuildConfig.APPLICATION_ID))
         val extras = Bundle()
-        castDevice.putInBundle(extras)
+        castDevice?.putInBundle(extras)
         contentIntent.putExtras(extras)
         contentIntent.setClass(mContext, SDNotificationReceiver::class.java)
         return PendingIntent.getBroadcast(mContext, 0, contentIntent, 0)

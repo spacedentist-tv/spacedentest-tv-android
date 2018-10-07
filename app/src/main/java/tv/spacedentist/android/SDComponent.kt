@@ -7,7 +7,7 @@ import tv.spacedentist.android.util.SDLogger
 import javax.inject.Singleton
 
 @Singleton
-@Component(modules = arrayOf(SDModule::class))
+@Component(modules = [SDModule::class])
 interface SDComponent {
     val logger: SDLogger
     val chromecastManager: SDChromecastManager

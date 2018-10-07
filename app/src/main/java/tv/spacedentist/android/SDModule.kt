@@ -18,6 +18,7 @@ open class SDModule(private val mApplication: SDApplication?) {
     }
 
     @Provides
+    @Singleton
     internal open fun provideCastContext(): CastContext {
         return CastContext.getSharedInstance(mApplication!!)
     }

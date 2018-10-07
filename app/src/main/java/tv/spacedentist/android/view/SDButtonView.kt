@@ -23,6 +23,6 @@ class SDButtonView(context: Context, attrs: AttributeSet) : AppCompatButton(cont
     }
 
     companion object {
-        private val TAG = "SDButtonView"
+        private const val TAG = "SDButtonView"
     }
 }

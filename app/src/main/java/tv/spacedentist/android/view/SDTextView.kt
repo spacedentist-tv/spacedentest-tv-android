@@ -23,6 +23,6 @@ class SDTextView(context: Context, attr: AttributeSet) : AppCompatTextView(conte
     }
 
     companion object {
-        private val TAG = "SDTextView"
+        private const val TAG = "SDTextView"
     }
 }

@@ -149,6 +149,6 @@ class SDMainActivity : AppCompatActivity(), CastStateListener {
     }
 
     companion object {
-        private val TAG = "SDMainActivity"
+        private const val TAG = "SDMainActivity"
     }
 }

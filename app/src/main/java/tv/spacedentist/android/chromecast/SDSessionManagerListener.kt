@@ -8,62 +8,62 @@ import tv.spacedentist.android.BuildConfig
 import tv.spacedentist.android.util.SDLogger
 import java.io.IOException
 
-internal class SDSessionManagerListener(private val mLogger: SDLogger) : SessionManagerListener<CastSession>, Cast.MessageReceivedCallback {
+internal class SDSessionManagerListener(private val logger: SDLogger) : SessionManagerListener<CastSession>, Cast.MessageReceivedCallback {
 
     override fun onSessionStarting(session: CastSession) {
-        mLogger.d(TAG, "onSessionStarting")
+        logger.d(TAG, "onSessionStarting")
         trySetMessageReceivedCallbacks(session)
     }
 
     override fun onSessionStarted(session: CastSession, sessionId: String) {
-        mLogger.d(TAG, "onSessionStarted: $sessionId")
+        logger.d(TAG, "onSessionStarted: $sessionId")
         trySetMessageReceivedCallbacks(session)
     }
 
     override fun onSessionStartFailed(session: CastSession, error: Int) {
-        mLogger.d(TAG, "onSessionStartFailed: $error")
+        logger.d(TAG, "onSessionStartFailed: $error")
     }
 
     override fun onSessionEnding(session: CastSession) {
-        mLogger.i(TAG, "onSessionEnding")
+        logger.i(TAG, "onSessionEnding")
     }
 
     override fun onSessionEnded(session: CastSession, error: Int) {
-        mLogger.i(TAG, "onSessionEnded $error")
+        logger.i(TAG, "onSessionEnded $error")
     }
 
     override fun onSessionResuming(session: CastSession, sessionId: String) {
-        mLogger.i(TAG, "onSessionResuming $sessionId")
+        logger.i(TAG, "onSessionResuming $sessionId")
         trySetMessageReceivedCallbacks(session)
     }
 
     override fun onSessionResumed(session: CastSession, wasSuspended: Boolean) {
-        mLogger.i(TAG, "onSessionResumed: $wasSuspended")
+        logger.i(TAG, "onSessionResumed: $wasSuspended")
         trySetMessageReceivedCallbacks(session)
     }
 
     override fun onSessionResumeFailed(session: CastSession, result: Int) {
-        mLogger.d(TAG, "onConnectionFailed: $result")
+        logger.d(TAG, "onConnectionFailed: $result")
     }
 
     override fun onSessionSuspended(session: CastSession, reason: Int) {
-        mLogger.d(TAG, "onConnectionSuspended: $reason")
+        logger.d(TAG, "onConnectionSuspended: $reason")
     }
 
     override fun onMessageReceived(castDevice: CastDevice, namespace: String, message: String) {
-        mLogger.d(TAG, "onMessageReceived: $message")
+        logger.d(TAG, "onMessageReceived: $message")
     }
 
     private fun trySetMessageReceivedCallbacks(session: CastSession) {
         try {
             session.setMessageReceivedCallbacks(BuildConfig.CHROMECAST_APP_NAMESPACE, this)
         } catch (e: IOException) {
-            mLogger.e(TAG, "we couldn't register for message received callbacks", e)
+            logger.e(TAG, "we couldn't register for message received callbacks", e)
         }
 
     }
 
     companion object {
-        private val TAG = "SDSessionManagerListener"
+        private const val TAG = "SDSessionManagerListener"
     }
 }

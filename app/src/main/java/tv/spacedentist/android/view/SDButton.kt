@@ -1,7 +1,6 @@
 package tv.spacedentist.android.view
 
 import androidx.annotation.IdRes
-import org.json.JSONException
 import org.json.JSONObject
 import tv.spacedentist.android.R
 
@@ -22,7 +21,6 @@ enum class SDButton(@param:IdRes @get:IdRes val resId: Int, val key: String) {
     BUTTON_TRUFAX(R.id.button_trufax, "cycle");
 
     val message: String
-        @Throws(JSONException::class)
         get() {
             val message = JSONObject()
             message.put(SDTV_MSG_KEY, SDTV_REMOTE_CONTROL_KEY)

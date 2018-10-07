@@ -38,20 +38,18 @@ class SDBackgroundView : AppCompatImageView {
     }
 
     protected fun recomputeImageMatrix() {
-        val matrix = imageMatrix
-
-        val scale: Float
         val viewWidth = width - paddingLeft - paddingRight
         val viewHeight = height - paddingTop - paddingBottom
         val drawableWidth = drawable.intrinsicWidth
         val drawableHeight = drawable.intrinsicHeight
 
-        if (drawableWidth * viewHeight > drawableHeight * viewWidth) {
-            scale = viewHeight.toFloat() / drawableHeight.toFloat()
+        val scale: Float = if (drawableWidth * viewHeight > drawableHeight * viewWidth) {
+            viewHeight.toFloat() / drawableHeight.toFloat()
         } else {
-            scale = viewWidth.toFloat() / drawableWidth.toFloat()
+            viewWidth.toFloat() / drawableWidth.toFloat()
         }
 
+        val matrix = imageMatrix
         matrix.setScale(scale, scale)
         imageMatrix = matrix
     }

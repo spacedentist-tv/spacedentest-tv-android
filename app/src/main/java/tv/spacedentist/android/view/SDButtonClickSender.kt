@@ -21,6 +21,6 @@ class SDButtonClickSender(private val mChromecastManager: SDChromecastManager) :
     }
 
     companion object {
-        private val TAG = "SDButtonClickSender"
+        private const val TAG = "SDButtonClickSender"
     }
 }
