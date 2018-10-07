@@ -13,7 +13,7 @@ import tv.spacedentist.android.view.SDButton
 class SDNotificationReceiver : BroadcastReceiver() {
 
     private fun getComponent(context: Context): SDComponent {
-        return (context.applicationContext as SDApplication).component
+        return SDApplication.component
     }
 
     private fun getLogger(context: Context): SDLogger {
@@ -21,7 +21,7 @@ class SDNotificationReceiver : BroadcastReceiver() {
     }
 
     override fun onReceive(context: Context, intent: Intent) {
-        val chromecastManager = getComponent(context).chromecastManager
+        val chromecastManager = getComponent(context).castManager
 
         if (context.getString(R.string.notification_intent_action_stop, BuildConfig.APPLICATION_ID) == intent.action) {
             // We've received the stop intent so disconnect from the chromecast device
@@ -29,7 +29,7 @@ class SDNotificationReceiver : BroadcastReceiver() {
         } else if (context.getString(R.string.notification_intent_action_trufax, BuildConfig.APPLICATION_ID) == intent.action) {
             // We've got the trufax intent so send that button message to the chromecast
             try {
-                chromecastManager.sendChromecastMessage(SDButton.BUTTON_TRUFAX.message)
+                chromecastManager.sendCastMessage(SDButton.BUTTON_TRUFAX.message)
             } catch (e: JSONException) {
                 getLogger(context).e(TAG, "error sending message to chromecast", e)
             }

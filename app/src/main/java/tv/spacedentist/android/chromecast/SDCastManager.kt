@@ -15,7 +15,7 @@ import java.util.*
  * This used to be where most of the Chormecast logic happens, but now it mostly just redistributes
  * cast state changed callbacks
  */
-class SDChromecastManager(private val component: SDComponent) : CastStateListener {
+class SDCastManager(private val component: SDComponent) : CastStateListener {
 
     private val mListeners = HashSet<CastStateListener>()
     private val mSessionManagerListener: SessionManagerListener<CastSession>
@@ -37,6 +37,8 @@ class SDChromecastManager(private val component: SDComponent) : CastStateListene
 
     init {
         mSessionManagerListener = SDSessionManagerListener(logger)
+
+        logger.i(TAG, "Starting with cast state ${castContext.castState}")
     }
 
     fun addCastStateListener(listener: CastStateListener) {
@@ -60,13 +62,12 @@ class SDChromecastManager(private val component: SDComponent) : CastStateListene
         }
     }
 
-    fun sendChromecastMessage(message: String) {
+    fun sendCastMessage(message: String) {
         logger.i(TAG, "sending message: '" + message + "' state: " + castContext.castState)
 
-        castContext.sessionManager.currentCastSession?.let {
-            it.sendMessage(BuildConfig.CHROMECAST_APP_NAMESPACE, message)
-                    .setResultCallback(this::onMessageResult)
-        }
+        castContext.sessionManager.currentCastSession
+                ?.sendMessage(BuildConfig.CHROMECAST_APP_NAMESPACE, message)
+                ?.setResultCallback(this::onMessageResult)
     }
 
     fun onResume() {

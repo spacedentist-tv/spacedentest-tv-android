@@ -11,11 +11,10 @@ import androidx.transition.TransitionManager
 import com.google.android.gms.cast.framework.CastButtonFactory
 import com.google.android.gms.cast.framework.CastState
 import com.google.android.gms.cast.framework.CastStateListener
-import tv.spacedentist.android.chromecast.SDChromecastManager
+import tv.spacedentist.android.chromecast.SDCastManager
 import tv.spacedentist.android.util.SDLogger
 import tv.spacedentist.android.view.SDButton
 import tv.spacedentist.android.view.SDButtonClickSender
-import javax.inject.Inject
 
 /**
  * The activity class that does everything. Luckily there's not that much to do, but would be nice
@@ -23,12 +22,14 @@ import javax.inject.Inject
  */
 class SDMainActivity : AppCompatActivity(), CastStateListener {
 
-    @Inject
-    internal lateinit var mNotificationManager: SDNotificationManager
-    @Inject
-    internal lateinit var mChromecastManager: SDChromecastManager
-    @Inject
-    internal lateinit var mLogger: SDLogger
+    private val notificationManager: SDNotificationManager
+        get() = SDApplication.component.notificationManager
+
+    private val castManager: SDCastManager
+        get() = SDApplication.component.castManager
+
+    private val logger: SDLogger
+        get() = SDApplication.component.logger
 
     private lateinit var mDisconnectedScene: Scene
     private lateinit var mChromecastScene: Scene
@@ -39,12 +40,12 @@ class SDMainActivity : AppCompatActivity(), CastStateListener {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
         setContentView(R.layout.activity_main)
-        (application as SDApplication).component.inject(this)
 
-        mLogger.d(TAG, "onCreate()")
+        logger.d(TAG, "onCreate()")
 
-        mChromecastManager.addCastStateListener(this)
+        castManager.addCastStateListener(this)
 
         supportActionBar?.let {
             it.setDisplayShowCustomEnabled(true)
@@ -55,7 +56,7 @@ class SDMainActivity : AppCompatActivity(), CastStateListener {
         val sceneRoot = findViewById<ViewGroup>(R.id.scene_root)
 
         // add the button click listeners
-        val buttonClickSender = SDButtonClickSender(mChromecastManager)
+        val buttonClickSender = SDButtonClickSender(castManager)
         sceneRoot.setOnHierarchyChangeListener(object : ViewGroup.OnHierarchyChangeListener {
             override fun onChildViewAdded(parent: View, child: View) {
                 // if we're adding the keypad attach the key listeners
@@ -79,34 +80,24 @@ class SDMainActivity : AppCompatActivity(), CastStateListener {
     override fun onDestroy() {
         super.onDestroy()
 
-        mLogger.d(TAG, "onDestroy()")
+        logger.d(TAG, "onDestroy()")
 
-        mChromecastManager.removeCastStateListener(this)
+        castManager.removeCastStateListener(this)
     }
 
     public override fun onResume() {
         super.onResume()
-        mLogger.d(TAG, "onResume()")
-        mNotificationManager.setActivityOpen(true)
-        showCorrectView(mChromecastManager.currentCastState)
-        mChromecastManager.onResume()
+        logger.d(TAG, "onResume()")
+        notificationManager.setActivityOpen(true)
+        showCorrectView(castManager.currentCastState)
+        castManager.onResume()
     }
 
     override fun onPause() {
         super.onPause()
-        mLogger.d(TAG, "onPause()")
-        mNotificationManager.setActivityOpen(false)
-        mChromecastManager.onPause()
-    }
-
-    public override fun onStart() {
-        super.onStart()
-
-    }
-
-    public override fun onStop() {
-        mLogger.d(TAG, "onStop")
-        super.onStop()
+        logger.d(TAG, "onPause()")
+        notificationManager.setActivityOpen(false)
+        castManager.onPause()
     }
 
     private fun setMenuItem(menu: Menu, @IdRes itemId: Int, title: String, visible: Boolean) {
@@ -133,14 +124,12 @@ class SDMainActivity : AppCompatActivity(), CastStateListener {
     }
 
     private fun showCorrectView(state: Int) {
-        val newScene = if (state == CastState.CONNECTING)
-            mConnectingScene
-        else if (state == CastState.CONNECTED)
-            mConnectedScene
-        else if (state != CastState.NO_DEVICES_AVAILABLE)
-            mChromecastScene
-        else
-            mDisconnectedScene
+        val newScene = when {
+            state == CastState.CONNECTING -> mConnectingScene
+            state == CastState.CONNECTED -> mConnectedScene
+            state != CastState.NO_DEVICES_AVAILABLE -> mChromecastScene
+            else -> mDisconnectedScene
+        }
 
         if (newScene != mCurrentScene) {
             mCurrentScene = newScene

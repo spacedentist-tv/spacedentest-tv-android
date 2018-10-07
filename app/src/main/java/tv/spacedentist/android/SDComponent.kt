@@ -2,7 +2,7 @@ package tv.spacedentist.android
 
 import com.google.android.gms.cast.framework.CastContext
 import dagger.Component
-import tv.spacedentist.android.chromecast.SDChromecastManager
+import tv.spacedentist.android.chromecast.SDCastManager
 import tv.spacedentist.android.util.SDLogger
 import javax.inject.Singleton
 
@@ -10,10 +10,9 @@ import javax.inject.Singleton
 @Component(modules = [SDModule::class])
 interface SDComponent {
     val logger: SDLogger
-    val chromecastManager: SDChromecastManager
+    val castManager: SDCastManager
     val castContext: CastContext
+    val notificationManager: SDNotificationManager
 
     fun inject(mainActivity: SDMainActivity)
-    fun inject(chromecastManager: SDChromecastManager)
-    fun inject(notificationManager: SDNotificationManager)
 }

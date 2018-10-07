@@ -8,14 +8,16 @@ import android.app.Application
  */
 class SDApplication : Application() {
 
-    lateinit var component: SDComponent
-        private set
-
     override fun onCreate() {
         super.onCreate()
 
         component = DaggerSDComponent.builder()
                 .sDModule(SDModule(this))
                 .build()
+    }
+
+    companion object {
+        lateinit var component: SDComponent
+            private set
     }
 }

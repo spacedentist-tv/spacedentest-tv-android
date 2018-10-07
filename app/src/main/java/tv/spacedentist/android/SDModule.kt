@@ -3,7 +3,7 @@ package tv.spacedentist.android
 import com.google.android.gms.cast.framework.CastContext
 import dagger.Module
 import dagger.Provides
-import tv.spacedentist.android.chromecast.SDChromecastManager
+import tv.spacedentist.android.chromecast.SDCastManager
 import tv.spacedentist.android.util.SDLogger
 import tv.spacedentist.android.util.SDLoggerAndroid
 import javax.inject.Singleton
@@ -25,13 +25,13 @@ open class SDModule(private val mApplication: SDApplication?) {
 
     @Provides
     @Singleton
-    internal fun provideChromecastManager(): SDChromecastManager {
-        return SDChromecastManager(mApplication!!.component)
+    internal fun provideChromecastManager(): SDCastManager {
+        return SDCastManager(SDApplication.component)
     }
 
     @Provides
     @Singleton
     internal open fun provideNotificationManager(): SDNotificationManager {
-        return SDNotificationManager(mApplication!!, mApplication.component)
+        return SDNotificationManager(mApplication!!, SDApplication.component)
     }
 }

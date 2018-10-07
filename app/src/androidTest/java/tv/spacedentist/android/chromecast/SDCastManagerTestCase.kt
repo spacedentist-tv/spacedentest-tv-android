@@ -12,7 +12,7 @@ import org.mockito.MockitoAnnotations
 import tv.spacedentist.android.DaggerSDComponent
 import tv.spacedentist.android.SDTestModule
 
-class SDChromecastManagerTestCase {
+class SDCastManagerTestCase {
 
     @Mock
     private lateinit var mMockSessionManager: SessionManager
@@ -21,7 +21,7 @@ class SDChromecastManagerTestCase {
     @Mock
     private lateinit var mMockCastContext: CastContext
 
-    private lateinit var mChromecastManager: SDChromecastManager
+    private lateinit var mCastManager: SDCastManager
 
     @Before
     fun setUp() {
@@ -31,7 +31,7 @@ class SDChromecastManagerTestCase {
                 .sDModule(SDTestModule())
                 .build()
 
-        mChromecastManager = SDChromecastManager(component)
+        mCastManager = SDCastManager(component)
         mMockCastContext = component.castContext
 
         `when`(mMockCastContext.sessionManager).thenReturn(mMockSessionManager)
@@ -41,19 +41,19 @@ class SDChromecastManagerTestCase {
     @Test
     fun testAddListener() {
         val listener = mock(CastStateListener::class.java)
-        mChromecastManager.addCastStateListener(listener)
+        mCastManager.addCastStateListener(listener)
         verify(listener, never()).onCastStateChanged(anyInt())
-        mChromecastManager.onCastStateChanged(CastState.CONNECTED)
+        mCastManager.onCastStateChanged(CastState.CONNECTED)
         verify(listener, times(1)).onCastStateChanged(CastState.CONNECTED)
     }
 
     @Test
     fun testAddSameListenerTwice() {
         val listener = mock(CastStateListener::class.java)
-        mChromecastManager.addCastStateListener(listener)
-        mChromecastManager.addCastStateListener(listener)
+        mCastManager.addCastStateListener(listener)
+        mCastManager.addCastStateListener(listener)
         verify(listener, never()).onCastStateChanged(anyInt())
-        mChromecastManager.onCastStateChanged(CastState.CONNECTING)
+        mCastManager.onCastStateChanged(CastState.CONNECTING)
         verify(listener, times(1)).onCastStateChanged(CastState.CONNECTING)
     }
 
@@ -61,11 +61,11 @@ class SDChromecastManagerTestCase {
     fun testAddTwoListeners() {
         val listener1 = mock(CastStateListener::class.java)
         val listener2 = mock(CastStateListener::class.java)
-        mChromecastManager.addCastStateListener(listener1)
-        mChromecastManager.addCastStateListener(listener2)
+        mCastManager.addCastStateListener(listener1)
+        mCastManager.addCastStateListener(listener2)
         verify(listener1, never()).onCastStateChanged(anyInt())
         verify(listener2, never()).onCastStateChanged(anyInt())
-        mChromecastManager.onCastStateChanged(CastState.CONNECTING)
+        mCastManager.onCastStateChanged(CastState.CONNECTING)
         verify(listener1, times(1)).onCastStateChanged(CastState.CONNECTING)
         verify(listener2, times(1)).onCastStateChanged(CastState.CONNECTING)
     }
@@ -73,9 +73,9 @@ class SDChromecastManagerTestCase {
     @Test
     fun testRemoveListener() {
         val listener = mock(CastStateListener::class.java)
-        mChromecastManager.addCastStateListener(listener)
-        mChromecastManager.removeCastStateListener(listener)
-        mChromecastManager.onCastStateChanged(CastState.CONNECTING)
+        mCastManager.addCastStateListener(listener)
+        mCastManager.removeCastStateListener(listener)
+        mCastManager.onCastStateChanged(CastState.CONNECTING)
         verify(listener, never()).onCastStateChanged(CastState.CONNECTING)
     }
 
@@ -83,10 +83,10 @@ class SDChromecastManagerTestCase {
     fun testRemoveTwoListeners() {
         val listener1 = mock(CastStateListener::class.java)
         val listener2 = mock(CastStateListener::class.java)
-        mChromecastManager.addCastStateListener(listener1)
-        mChromecastManager.addCastStateListener(listener2)
-        mChromecastManager.removeCastStateListener(listener1)
-        mChromecastManager.onCastStateChanged(CastState.CONNECTING)
+        mCastManager.addCastStateListener(listener1)
+        mCastManager.addCastStateListener(listener2)
+        mCastManager.removeCastStateListener(listener1)
+        mCastManager.onCastStateChanged(CastState.CONNECTING)
         verify(listener1, never()).onCastStateChanged(CastState.CONNECTING)
         verify(listener2, times(1)).onCastStateChanged(CastState.CONNECTING)
     }
@@ -94,26 +94,26 @@ class SDChromecastManagerTestCase {
     @Test
     fun testRemoveUnaddedListener() {
         val listener = mock(CastStateListener::class.java)
-        mChromecastManager.removeCastStateListener(listener)
-        mChromecastManager.onCastStateChanged(CastState.CONNECTING)
+        mCastManager.removeCastStateListener(listener)
+        mCastManager.onCastStateChanged(CastState.CONNECTING)
         verify(listener, never()).onCastStateChanged(CastState.CONNECTING)
     }
 
     @Test
     fun testIsConnecting() {
-        assertFalse(mChromecastManager.currentCastState === CastState.CONNECTING)
+        assertFalse(mCastManager.currentCastState === CastState.CONNECTING)
         `when`(mMockCastContext.castState).thenReturn(CastState.CONNECTING)
-        assertEquals(mChromecastManager.currentCastState, CastState.CONNECTING)
+        assertEquals(mCastManager.currentCastState, CastState.CONNECTING)
         `when`(mMockCastContext.castState).thenReturn(CastState.NO_DEVICES_AVAILABLE)
-        assertFalse(mChromecastManager.currentCastState === CastState.CONNECTING)
+        assertFalse(mCastManager.currentCastState === CastState.CONNECTING)
     }
 
     @Test
     fun testIsConnected() {
-        assertFalse(mChromecastManager.currentCastState === CastState.CONNECTED)
+        assertFalse(mCastManager.currentCastState === CastState.CONNECTED)
         `when`(mMockCastContext.castState).thenReturn(CastState.CONNECTED)
-        assertEquals(mChromecastManager.currentCastState, CastState.CONNECTED)
+        assertEquals(mCastManager.currentCastState, CastState.CONNECTED)
         `when`(mMockCastContext.castState).thenReturn(CastState.CONNECTING)
-        assertFalse(mChromecastManager.currentCastState === CastState.CONNECTED)
+        assertFalse(mCastManager.currentCastState === CastState.CONNECTED)
     }
 }
